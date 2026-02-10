@@ -1,0 +1,15 @@
+[project]
+name = "jetblack-ksqldb"
+version = "0.1.0"
+description = "Let's go psycho!"
+authors = [{name = "Rob Blackbourn", email = "rob.blackbourn@gmail.com"}]
+readme = "README.md"
+dependencies = [
+    "httpx<1,>=0.28.1",
+    "jetblack-serialization",
+    "stringcase>=1.2.0,<2",
+]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
