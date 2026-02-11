@@ -96,7 +96,7 @@ class KsqlDbClient:
             *,
             streams_properties: Mapping[str, str] | None = None,
             timeout: Timeout | None = None
-    ) -> list[Any]:
+    ) -> AsyncIterator[Any]:
         headers = {
             "content-type": CONTENT_TYPE_JSON
         }
@@ -107,13 +107,15 @@ class KsqlDbClient:
         }
 
         async with AsyncClient(headers=headers, auth=self._auth) as client:
-            response = await client.post(
+            async with client.stream(
+                "POST",
                 f"{self._url}/query",
                 json=body,
                 timeout=timeout or USE_CLIENT_DEFAULT
-            )
-            response.raise_for_status()
-            return response.json()
+            ) as response:
+                response.raise_for_status()
+                async for line in response.aiter_lines():
+                    yield json.loads(line)
 
     async def queury_status(
             self,
@@ -155,6 +157,7 @@ class KsqlDbClient:
                 json=body,
                 timeout=timeout
             ) as response:
+                response.raise_for_status()
                 async for line in response.aiter_lines():
                     yield json.loads(line)
 
