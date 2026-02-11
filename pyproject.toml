@@ -5,9 +5,7 @@ description = "Let's go psycho!"
 authors = [{name = "Rob Blackbourn", email = "rob.blackbourn@gmail.com"}]
 readme = "README.md"
 dependencies = [
-    "httpx<1,>=0.28.1",
-    "jetblack-serialization",
-    "stringcase>=1.2.0,<2",
+    "httpx[http2]<1,>=0.28.1"
 ]
 
 [build-system]
