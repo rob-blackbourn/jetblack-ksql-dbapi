@@ -1,9 +1,11 @@
 """A client for ksqlDB"""
 
 import json
-from typing import Any, AsyncIterator, Mapping
+from typing import Any, AsyncIterator, Mapping, cast
 
 from httpx import AsyncClient, Timeout, USE_CLIENT_DEFAULT, BasicAuth
+
+from .types import QueryMetaData
 
 CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_NDJSON = "application/vnd.ksqlapi.delimited.v1"
@@ -114,14 +116,13 @@ class KsqlDbClient:
                 timeout=Timeout(timeout, read=None)
             ) as response:
                 response.raise_for_status()
-                column_names: list[str] | None = None
+                meta_data: QueryMetaData | None = None
                 async for line in response.aiter_lines():
                     data = json.loads(line)
-                    if column_names is None:
-                        column_names = data['columnNames']
+                    if meta_data is None:
+                        meta_data = cast(QueryMetaData, data)
                     else:
-                        row = dict(zip(column_names, data))
-                        yield row
+                        yield dict(zip(meta_data["columnNames"], data))
 
     async def queury_status(
             self,
@@ -165,14 +166,13 @@ class KsqlDbClient:
                 timeout=Timeout(timeout, read=None)
             ) as response:
                 response.raise_for_status()
-                column_names: list[str] | None = None
+                meta_data: QueryMetaData | None = None
                 async for line in response.aiter_lines():
                     data = json.loads(line)
-                    if column_names is None:
-                        column_names = data['columnNames']
+                    if meta_data is None:
+                        meta_data = cast(QueryMetaData, data)
                     else:
-                        row = dict(zip(column_names, data))
-                        yield row
+                        yield dict(zip(meta_data['columnNames'], data))
 
     async def close_query(
             self,
