@@ -95,7 +95,7 @@ class KsqlDbClient:
             ksql: str,
             *,
             streams_properties: Mapping[str, str] | None = None,
-            timeout: Timeout | None = None
+            timeout: float = 1.0
     ) -> AsyncIterator[Any]:
         headers = {
             "content-type": CONTENT_TYPE_JSON
@@ -111,11 +111,17 @@ class KsqlDbClient:
                 "POST",
                 f"{self._url}/query",
                 json=body,
-                timeout=timeout or USE_CLIENT_DEFAULT
+                timeout=Timeout(timeout, read=None)
             ) as response:
                 response.raise_for_status()
+                column_names: list[str] | None = None
                 async for line in response.aiter_lines():
-                    yield json.loads(line)
+                    data = json.loads(line)
+                    if column_names is None:
+                        column_names = data['columnNames']
+                    else:
+                        row = dict(zip(column_names, data))
+                        yield row
 
     async def queury_status(
             self,
@@ -138,7 +144,8 @@ class KsqlDbClient:
     async def query_stream(
             self,
             sql: str,
-            timeout: Timeout | None = None,
+            *,
+            timeout: float = 1.0,
             properties: dict[str, Any] | None = None
     ) -> AsyncIterator[Any]:
         headers = {
@@ -155,11 +162,17 @@ class KsqlDbClient:
                 "POST",
                 f"{self._url}/query-stream",
                 json=body,
-                timeout=timeout
+                timeout=Timeout(timeout, read=None)
             ) as response:
                 response.raise_for_status()
+                column_names: list[str] | None = None
                 async for line in response.aiter_lines():
-                    yield json.loads(line)
+                    data = json.loads(line)
+                    if column_names is None:
+                        column_names = data['columnNames']
+                    else:
+                        row = dict(zip(column_names, data))
+                        yield row
 
     async def close_query(
             self,

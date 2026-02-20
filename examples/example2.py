@@ -16,8 +16,17 @@ WHERE
     GEO_DISTANCE(latitude, longitude, 37.4133, -122.1162) <= 5
 EMIT CHANGES;
 """
-    async for row in ksqldb.query(sql, timeout=5.0):
-        print(row)
+    async for row in ksqldb.query_stream(sql):
+        print("run_query", row)
+        # {
+        #   'queryId': 'transient_RIDERLOCATIONS_6772440454185557945',
+        #   'columnNames': ['PROFILEID', 'LATITUDE', 'LONGITUDE'],
+        #   'columnTypes': ['STRING', 'DOUBLE', 'DOUBLE']
+        # }
+        #
+        # ['4ab5cbad', 37.3952, -122.0813]
+        # ['8b6eae59', 37.3944, -122.0813]
+        # ['4a7c7b41', 37.4049, -122.0822]
 
 
 async def setup(ksqldb: KsqlDbClient) -> None:
@@ -36,7 +45,21 @@ WITH (
 );
 """
     )
-    print(response)
+    print("create stream", response)
+    # [
+    #   {
+    #     '@type': 'currentStatus',
+    #     'statementText': "CREATE STREAM RIDERLOCATIONS (PROFILEID STRING, LATITUDE DOUBLE, LONGITUDE DOUBLE) WITH (CLEANUP_POLICY='delete', KAFKA_TOPIC='locations', KEY_FORMAT='KAFKA', PARTITIONS=1, VALUE_FORMAT='JSON');",
+    #     'commandId': 'stream/`RIDERLOCATIONS`/create',
+    #     'commandStatus': {
+    #       'status': 'SUCCESS',
+    #       'message': 'Stream created',
+    #       'queryId': None
+    #     },
+    #     'commandSequenceNumber': 2,
+    #     'warnings': []
+    #   }
+    # ]
 
     response = await ksqldb.ksql(
         """
@@ -53,7 +76,21 @@ AS
     EMIT CHANGES;
 """
     )
-    print(response)
+    print("create table 1", response)
+    # [
+    #   {
+    #     '@type': 'currentStatus',
+    #     'statementText': "CREATE TABLE CURRENTLOCATION WITH (CLEANUP_POLICY='compact', KAFKA_TOPIC='CURRENTLOCATION', PARTITIONS=1, REPLICAS=1, RETENTION_MS=604800000) AS SELECT\n  RIDERLOCATIONS.PROFILEID PROFILEID,\n  LATEST_BY_OFFSET(RIDERLOCATIONS.LATITUDE) LA,\n  LATEST_BY_OFFSET(RIDERLOCATIONS.LONGITUDE) LO\nFROM RIDERLOCATIONS RIDERLOCATIONS\nGROUP BY RIDERLOCATIONS.PROFILEID\nEMIT CHANGES;",
+    #     'commandId': 'table/`CURRENTLOCATION`/create',
+    #     'commandStatus': {
+    #       'status': 'SUCCESS',
+    #       'message': 'Created query with ID CTAS_CURRENTLOCATION_3',
+    #       'queryId': 'CTAS_CURRENTLOCATION_3'
+    #     },
+    #     'commandSequenceNumber': 4,
+    #     'warnings': []
+    #   }
+    # ]
 
     response = await ksqldb.ksql(
         """
@@ -71,6 +108,20 @@ AS
  """
     )
     print(response)
+    # [
+    #   {
+    #     '@type': 'currentStatus',
+    #     'statementText': "CREATE TABLE RIDERSNEARMOUNTAINVIEW WITH (CLEANUP_POLICY='compact', KAFKA_TOPIC='RIDERSNEARMOUNTAINVIEW', PARTITIONS=1, REPLICAS=1, RETENTION_MS=604800000) AS SELECT\n  ROUND(GEO_DISTANCE(CURRENTLOCATION.LA, CURRENTLOCATION.LO, 37.4133, -122.1162), -1) DISTANCEINMILES,\n  COLLECT_LIST(CURRENTLOCATION.PROFILEID) RIDERS,\n  COUNT(*) COUNT\nFROM CURRENTLOCATION CURRENTLOCATION\nGROUP BY ROUND(GEO_DISTANCE(CURRENTLOCATION.LA, CURRENTLOCATION.LO, 37.4133, -122.1162), -1)\nEMIT CHANGES;",
+    #     'commandId': 'table/`RIDERSNEARMOUNTAINVIEW`/create',
+    #     'commandStatus': {
+    #       'status': 'SUCCESS',
+    #       'message': 'Created query with ID CTAS_RIDERSNEARMOUNTAINVIEW_5',
+    #       'queryId': 'CTAS_RIDERSNEARMOUNTAINVIEW_5'
+    #     },
+    #     'commandSequenceNumber': 6,
+    #     'warnings': []
+    #   }
+    # ]
 
 
 async def main() -> None:
@@ -80,7 +131,7 @@ async def main() -> None:
 
     # await setup(ksqldb)
 
-    asyncio.create_task(run_query(ksqldb))
+    query_task = asyncio.create_task(run_query(ksqldb))
 
     stream_name = "riderLocations"
     rows = [
@@ -95,13 +146,28 @@ async def main() -> None:
 
         async for result in ksqldb.inserts_stream(stream_name, [row]):
             print(result)
+            # {'seq': 0, 'status': 'ok'}
+            # {'seq': 0, 'status': 'ok'}
+            # {'seq': 0, 'status': 'ok'}
+            # {'seq': 0, 'status': 'ok'}
+            # {'seq': 0, 'status': 'ok'}
+            # {'seq': 0, 'status': 'ok'}
 
         await asyncio.sleep(1)
 
-    await asyncio.sleep(60)
+    await asyncio.sleep(1)
+
+    query_task.cancel()
+    try:
+        await query_task
+    except asyncio.CancelledError:
+        pass
 
     print("Done")
 
 
 if __name__ == "__main__":
     asyncio.run(main())
+
+"""
+"""
