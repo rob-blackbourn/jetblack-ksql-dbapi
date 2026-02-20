@@ -1,7 +1,7 @@
 [project]
 name = "jetblack-ksqldb"
 version = "0.1.0"
-description = "Let's go psycho!"
+description = "An asyncio client for ksqldb"
 authors = [{name = "Rob Blackbourn", email = "rob.blackbourn@gmail.com"}]
 readme = "README.md"
 dependencies = [
