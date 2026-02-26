@@ -5,7 +5,7 @@ from typing import Any, AsyncIterator, Mapping, cast
 
 from httpx import AsyncClient, Timeout, USE_CLIENT_DEFAULT, BasicAuth
 
-from .types import QueryMetaData
+from .types import QueryMetaData, create_ksql_error
 
 CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_NDJSON = "application/vnd.ksqlapi.delimited.v1"
@@ -89,8 +89,11 @@ class KsqlDbClient:
                 json=body,
                 timeout=timeout or USE_CLIENT_DEFAULT
             )
-            response.raise_for_status()
-            return response.json()
+            if response.is_success:
+                return response.json()
+
+            error = create_ksql_error(response.json())
+            raise error
 
     async def query(
             self,
