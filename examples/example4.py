@@ -142,18 +142,34 @@ async def main() -> None:
 
     # await setup(ksqldb)
 
+#     response = await ksqldb.ksql(
+#         """\
+# CREATE TABLE user
+# (
+#     user_id BIGINT  PRIMARY KEY,
+#     username        VARCHAR
+# ) WITH (
+#     kafka_topic='user',
+#     value_format='json',
+#     key_format='json',
+#     partitions=1
+# );
+# """
+#     )
+#     print(response)
+
+#     response = await ksqldb.ksql(
+#         """\
+# INSERT INTO user(user_id, username) VALUES (1, 'tom');
+# INSERT INTO user(user_id, username) VALUES (2, 'dick');
+# INSERT INTO user(user_id, username) VALUES (3, 'harry');
+# """
+#     )
+#     print(response)
+
     response = await ksqldb.ksql(
         """\
-CREATE TABLE user
-(
-    user_id BIGINT  PRIMARY KEY,
-    username        VARCHAR
-) WITH (
-    kafka_topic='user',
-    value_format='json',
-    key_format='json',
-    partitions=1
-);
+PRINT user FROM BEGINNING;
 """
     )
     print(response)

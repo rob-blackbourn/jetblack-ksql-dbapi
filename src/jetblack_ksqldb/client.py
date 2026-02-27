@@ -3,7 +3,14 @@
 import json
 from typing import Any, AsyncIterator, Mapping, cast
 
-from httpx import AsyncClient, Timeout, USE_CLIENT_DEFAULT, BasicAuth
+import httpx
+from httpx import (
+    AsyncClient,
+    HTTPStatusError,
+    Timeout,
+    USE_CLIENT_DEFAULT,
+    BasicAuth
+)
 
 from .types import QueryMetaData, create_ksql_error
 
@@ -92,8 +99,15 @@ class KsqlDbClient:
             if response.is_success:
                 return response.json()
 
-            error = create_ksql_error(response.json())
-            raise error
+            if response.status_code == httpx.codes.BAD_REQUEST:
+                error = create_ksql_error(response.json())
+                raise error
+
+            raise HTTPStatusError(
+                f"{response.status_code}: {response.reason_phrase}",
+                request=response.request,
+                response=response
+            )
 
     async def query(
             self,
