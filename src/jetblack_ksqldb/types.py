@@ -1,4 +1,4 @@
-from typing import Any, Self, TypedDict
+from typing import Any, TypedDict
 
 
 class QueryMetaData(TypedDict):
@@ -59,6 +59,12 @@ def create_ksql_error(data: dict[str, Any]) -> Exception:
                 data['message'],
                 data['error_code'],
                 data['sqe'],
+            )
+
+        case "generic_error":
+            return KsqlError(
+                data['message'],
+                data['error_code']
             )
 
         case _:
