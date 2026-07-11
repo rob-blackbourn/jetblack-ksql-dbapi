@@ -8,6 +8,14 @@ dependencies = [
     "httpx[http2]<1,>=0.28.1"
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",
+    "pylint",
+    "mypy",
+]
+
 [project.urls]
 Repository = "https://github.com/rob-blackbourn/jetblack-ksqldb"
 Issues = "https://github.com/rob-blackbourn/jetblack-ksqldb/issues"
