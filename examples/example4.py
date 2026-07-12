@@ -2,10 +2,7 @@ import asyncio
 
 from jetblack_ksqldb import KsqlDbClient
 
-
-async def setup(ksqldb: KsqlDbClient) -> None:
-    response = await ksqldb.ksql(
-        """\
+SECURITY_TABLE_DDL = """\
 CREATE OR REPLACE TABLE security
 (
     security_id     BIGINT  PRIMARY KEY,
@@ -18,13 +15,9 @@ CREATE OR REPLACE TABLE security
     value_format='json',
     key_format='json',
     partitions=1
-);
-"""
-    )
-    print(response)
+);"""
 
-    response = await ksqldb.ksql(
-        """\
+STRATEGY_TABLE_DDL = """\
 CREATE OR REPLACE TABLE strategy
 (
     strategy_id     BIGINT  PRIMARY KEY,
@@ -36,17 +29,13 @@ WITH (
     value_format='json',
     key_format='json',
     partitions=1
-);
-"""
-    )
-    print(response)
+);"""
 
-    response = await ksqldb.ksql(
-        """\
-CREATE OR REPLACE TABLE trade
+TRADE_STREAM_DDL = """\
+CREATE OR REPLACE STREAM trade
 (
-    trade_id        BIGINT PRIMARY KEY,
-    version         BIGINT PRIMARY KEY,
+    trade_id        BIGINT KEY,
+    version         BIGINT KEY,
     security_id     BIGINT,
     strategy_id     BIGINT,
     quantity        DOUBLE,
@@ -59,11 +48,8 @@ WITH (
     partitions=1
 );
 """
-    )
-    print(response)
 
-    response = await ksqldb.ksql(
-        """
+POSITION_TABLE_DDL = """\
 CREATE OR REPLACE TABLE position
 (
     security_id     BIGINT PRIMARY KEY,
@@ -80,11 +66,8 @@ WITH (
     partitions=1
 );
 """
-    )
-    print(response)
 
-    response = await ksqldb.ksql(
-        """
+PRICE_STREAM_DDL = """\
 CREATE OR REPLACE STREAM price
 (
     ticker          VARCHAR,
@@ -97,15 +80,12 @@ WITH (
     partitions=1
 );
 """
-    )
-    print(response)
 
-    response = await ksqldb.ksql(
-        """
+CURRENCY_TABLE_DDL = """\
 CREATE OR REPLACE TABLE currency
 (
     ccy             VARCHAR PRIMARY KEY,
-    is_per_usd      BOOL
+    is_per_usd      BOOLEAN
 )
 WITH (
     kafka_topic='currency',
@@ -114,11 +94,8 @@ WITH (
     partitions=1
 );
 """
-    )
-    print(response)
 
-    response = await ksqldb.ksql(
-        """
+FX_RATE_STREAM_DDL = """\
 CREATE OR REPLACE STREAM fx_rate
 (
     ccy             VARCHAR,
@@ -131,8 +108,25 @@ WITH (
     partitions=1
 );
 """
-    )
-    print(response)
+
+DDL = {
+    'security': SECURITY_TABLE_DDL,
+    'strategy': STRATEGY_TABLE_DDL,
+    'trade': TRADE_STREAM_DDL,
+    'position': POSITION_TABLE_DDL,
+    'price': PRICE_STREAM_DDL,
+    'currency': CURRENCY_TABLE_DDL,
+    'fx_rate': FX_RATE_STREAM_DDL,
+}
+
+
+async def setup(ksqldb: KsqlDbClient) -> None:
+    for name, sql in DDL.items():
+        print(f"{name}: {sql}")
+        response = await ksqldb.ksql(sql)
+        print(response)
+
+    print("Done")
 
 
 async def main() -> None:
@@ -140,7 +134,7 @@ async def main() -> None:
 
     ksqldb = KsqlDbClient()
 
-    # await setup(ksqldb)
+    await setup(ksqldb)
 
 #     response = await ksqldb.ksql(
 #         """\
@@ -167,12 +161,12 @@ async def main() -> None:
 #     )
 #     print(response)
 
-    response = await ksqldb.ksql(
-        """\
-PRINT user FROM BEGINNING;
-"""
-    )
-    print(response)
+#     response = await ksqldb.ksql(
+#         """\
+# PRINT user FROM BEGINNING;
+# """
+#     )
+#     print(response)
 
 
 if __name__ == "__main__":
