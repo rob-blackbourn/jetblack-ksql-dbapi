@@ -33,7 +33,7 @@ INSERT INTO user(user_id, username) VALUES (3, 'harry');
     print(response)
 
 
-async def query_data(ksqldb: KsqlDbClient) -> None:
+async def print_data(ksqldb: KsqlDbClient) -> None:
     response = await ksqldb.ksql(
         """\
 PRINT user FROM BEGINNING;
@@ -49,7 +49,7 @@ async def main() -> None:
 
     await create_tables(ksqldb)
     await insert_data(ksqldb)
-    await query_data(ksqldb)
+    await print_data(ksqldb)
 
 
 if __name__ == "__main__":

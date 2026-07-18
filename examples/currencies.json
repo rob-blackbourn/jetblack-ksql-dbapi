@@ -1,0 +1,1962 @@
+[
+  {
+    "ccy": "ADP",
+    "name": "Andorran Peseta",
+    "minor_unit": null,
+    "numeric_code": 20,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "AED",
+    "name": "UAE Dirham",
+    "minor_unit": 2,
+    "numeric_code": 784,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "AFN",
+    "name": "Afghani",
+    "minor_unit": 2,
+    "numeric_code": 971,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ALL",
+    "name": "Lek",
+    "minor_unit": 2,
+    "numeric_code": 8,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "AMD",
+    "name": "Armenian Dram",
+    "minor_unit": 2,
+    "numeric_code": 51,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ANG",
+    "name": "Netherlands Antillean Guilder",
+    "minor_unit": 2,
+    "numeric_code": 532,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "AOA",
+    "name": "Kwanza",
+    "minor_unit": 2,
+    "numeric_code": 973,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ARS",
+    "name": "Argentine Peso",
+    "minor_unit": 2,
+    "numeric_code": 32,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ATS",
+    "name": "Austrian Schilling",
+    "minor_unit": 2,
+    "numeric_code": 40,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "AUD",
+    "name": "Australian Dollar",
+    "minor_unit": 2,
+    "numeric_code": 36,
+    "is_legacy": false,
+    "is_major": true,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "AWG",
+    "name": "Aruban Florin",
+    "minor_unit": 2,
+    "numeric_code": 533,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "AZN",
+    "name": "Azerbaijanian Manat",
+    "minor_unit": 2,
+    "numeric_code": 944,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BAM",
+    "name": "Convertible Mark",
+    "minor_unit": 2,
+    "numeric_code": 977,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BBD",
+    "name": "Barbados Dollar",
+    "minor_unit": 2,
+    "numeric_code": 52,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BDT",
+    "name": "Taka",
+    "minor_unit": 2,
+    "numeric_code": 50,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BEF",
+    "name": "Belgium Franc",
+    "minor_unit": null,
+    "numeric_code": 56,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BGN",
+    "name": "Bulgarian Lev",
+    "minor_unit": 2,
+    "numeric_code": 975,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BHD",
+    "name": "Bahraini Dinar",
+    "minor_unit": 3,
+    "numeric_code": 48,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BIF",
+    "name": "Burundi Franc",
+    "minor_unit": 0,
+    "numeric_code": 108,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BMD",
+    "name": "Bermudian Dollar",
+    "minor_unit": 2,
+    "numeric_code": 60,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BND",
+    "name": "Brunei Dollar",
+    "minor_unit": 2,
+    "numeric_code": 96,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BOB",
+    "name": "Boliviano",
+    "minor_unit": 2,
+    "numeric_code": 68,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BOV",
+    "name": "Mvdol",
+    "minor_unit": 2,
+    "numeric_code": 984,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BRL",
+    "name": "Brazilian Real",
+    "minor_unit": 2,
+    "numeric_code": 986,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BSD",
+    "name": "Bahamian Dollar",
+    "minor_unit": 2,
+    "numeric_code": 44,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BTN",
+    "name": "Ngultrum",
+    "minor_unit": 2,
+    "numeric_code": 64,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BWP",
+    "name": "Pula",
+    "minor_unit": 2,
+    "numeric_code": 72,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BYN",
+    "name": "Belarusian Ruble",
+    "minor_unit": 2,
+    "numeric_code": 933,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BYR",
+    "name": "Belarusian Ruble (old)",
+    "minor_unit": null,
+    "numeric_code": 974,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "BZD",
+    "name": "Belize Dollar",
+    "minor_unit": 2,
+    "numeric_code": 84,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CAD",
+    "name": "Canadian Dollar",
+    "minor_unit": 2,
+    "numeric_code": 124,
+    "is_legacy": false,
+    "is_major": true,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CDF",
+    "name": "Congolese Franc",
+    "minor_unit": 2,
+    "numeric_code": 976,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CHE",
+    "name": "WIR Euro",
+    "minor_unit": 2,
+    "numeric_code": 947,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CHF",
+    "name": "Swiss Franc",
+    "minor_unit": 2,
+    "numeric_code": 756,
+    "is_legacy": false,
+    "is_major": true,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CHW",
+    "name": "WIR Franc",
+    "minor_unit": 2,
+    "numeric_code": 948,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CLF",
+    "name": "Unidad de Fomento",
+    "minor_unit": 4,
+    "numeric_code": 990,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CLP",
+    "name": "Chilean Peso",
+    "minor_unit": 0,
+    "numeric_code": 152,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CNY",
+    "name": "Yuan Renminbi",
+    "minor_unit": 2,
+    "numeric_code": 156,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "COP",
+    "name": "Colombian Peso",
+    "minor_unit": 2,
+    "numeric_code": 170,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "COU",
+    "name": "Unidad de Valor Real",
+    "minor_unit": 2,
+    "numeric_code": 970,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CRC",
+    "name": "Costa Rican Colon",
+    "minor_unit": 2,
+    "numeric_code": 188,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CUC",
+    "name": "Peso Convertible",
+    "minor_unit": 2,
+    "numeric_code": 931,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CUP",
+    "name": "Cuban Peso",
+    "minor_unit": 2,
+    "numeric_code": 192,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CVE",
+    "name": "Cabo Verde Escudo",
+    "minor_unit": 2,
+    "numeric_code": 132,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "CZK",
+    "name": "Czech Koruna",
+    "minor_unit": 2,
+    "numeric_code": 203,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "DEM",
+    "name": "Deutsche Mark",
+    "minor_unit": null,
+    "numeric_code": 280,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "DJF",
+    "name": "Djibouti Franc",
+    "minor_unit": 0,
+    "numeric_code": 262,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "DKK",
+    "name": "Danish Krone",
+    "minor_unit": 2,
+    "numeric_code": 208,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "DOP",
+    "name": "Dominican Peso",
+    "minor_unit": 2,
+    "numeric_code": 214,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "DZD",
+    "name": "Algerian Dinar",
+    "minor_unit": 2,
+    "numeric_code": 12,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "EEK",
+    "name": "Estonian Kroon",
+    "minor_unit": null,
+    "numeric_code": 233,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "EGP",
+    "name": "Egyptian Pound",
+    "minor_unit": 2,
+    "numeric_code": 818,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ERN",
+    "name": "Nakfa",
+    "minor_unit": 2,
+    "numeric_code": 232,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ESP",
+    "name": "Spanish Peseta",
+    "minor_unit": null,
+    "numeric_code": 724,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ETB",
+    "name": "Ethiopian Birr",
+    "minor_unit": 2,
+    "numeric_code": 230,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "EUR",
+    "name": "Euro",
+    "minor_unit": 2,
+    "numeric_code": 978,
+    "is_legacy": false,
+    "is_major": true,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "FIM",
+    "name": "Markka",
+    "minor_unit": null,
+    "numeric_code": 246,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "FJD",
+    "name": "Fiji Dollar",
+    "minor_unit": 2,
+    "numeric_code": 242,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "FKP",
+    "name": "Falkland Islands Pound",
+    "minor_unit": 2,
+    "numeric_code": 238,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "FRF",
+    "name": "French Franc",
+    "minor_unit": null,
+    "numeric_code": 250,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GBP",
+    "name": "Pound Sterling",
+    "minor_unit": 2,
+    "numeric_code": 826,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GEL",
+    "name": "Lari",
+    "minor_unit": 2,
+    "numeric_code": 981,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GHS",
+    "name": "Ghana Cedi",
+    "minor_unit": 2,
+    "numeric_code": 936,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GIP",
+    "name": "Gibraltar Pound",
+    "minor_unit": 2,
+    "numeric_code": 292,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GMD",
+    "name": "Dalasi",
+    "minor_unit": 2,
+    "numeric_code": 270,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GNF",
+    "name": "Guinea Franc",
+    "minor_unit": 0,
+    "numeric_code": 324,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GRD",
+    "name": "Drachma",
+    "minor_unit": null,
+    "numeric_code": 300,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GTQ",
+    "name": "Quetzal",
+    "minor_unit": 2,
+    "numeric_code": 320,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "GYD",
+    "name": "Guyana Dollar",
+    "minor_unit": 2,
+    "numeric_code": 328,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "HKD",
+    "name": "Hong Kong Dollar",
+    "minor_unit": 2,
+    "numeric_code": 344,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "HNL",
+    "name": "Lempira",
+    "minor_unit": 2,
+    "numeric_code": 340,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "HRK",
+    "name": "Kuna",
+    "minor_unit": 2,
+    "numeric_code": 191,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "HTG",
+    "name": "Gourde",
+    "minor_unit": 2,
+    "numeric_code": 332,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "HUF",
+    "name": "Forint",
+    "minor_unit": 2,
+    "numeric_code": 348,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "IDR",
+    "name": "Rupiah",
+    "minor_unit": 2,
+    "numeric_code": 360,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ILS",
+    "name": "New Israeli Sheqel",
+    "minor_unit": 2,
+    "numeric_code": 376,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "INR",
+    "name": "Indian Rupee",
+    "minor_unit": 2,
+    "numeric_code": 356,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "IQD",
+    "name": "Iraqi Dinar",
+    "minor_unit": 3,
+    "numeric_code": 368,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "IRR",
+    "name": "Iranian Rial",
+    "minor_unit": 2,
+    "numeric_code": 364,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ISK",
+    "name": "Iceland Krona",
+    "minor_unit": 0,
+    "numeric_code": 352,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ITL",
+    "name": "Lira",
+    "minor_unit": null,
+    "numeric_code": 380,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "JMD",
+    "name": "Jamaican Dollar",
+    "minor_unit": 2,
+    "numeric_code": 388,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "JOD",
+    "name": "Jordanian Dinar",
+    "minor_unit": 3,
+    "numeric_code": 400,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "JPY",
+    "name": "Yen",
+    "minor_unit": 0,
+    "numeric_code": 392,
+    "is_legacy": false,
+    "is_major": true,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KES",
+    "name": "Kenyan Shilling",
+    "minor_unit": 2,
+    "numeric_code": 404,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KGS",
+    "name": "Som",
+    "minor_unit": 2,
+    "numeric_code": 417,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KHR",
+    "name": "Riel",
+    "minor_unit": 2,
+    "numeric_code": 116,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KMF",
+    "name": "Comoro Franc",
+    "minor_unit": 0,
+    "numeric_code": 174,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KPW",
+    "name": "North Korean Won",
+    "minor_unit": 2,
+    "numeric_code": 408,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KRW",
+    "name": "Won",
+    "minor_unit": 0,
+    "numeric_code": 410,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KWD",
+    "name": "Kuwaiti Dinar",
+    "minor_unit": 3,
+    "numeric_code": 414,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KYD",
+    "name": "Cayman Islands Dollar",
+    "minor_unit": 2,
+    "numeric_code": 136,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "KZT",
+    "name": "Tenge",
+    "minor_unit": 2,
+    "numeric_code": 398,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LAK",
+    "name": "Kip",
+    "minor_unit": 2,
+    "numeric_code": 418,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LBP",
+    "name": "Lebanese Pound",
+    "minor_unit": 2,
+    "numeric_code": 422,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LKR",
+    "name": "Sri Lanka Rupee",
+    "minor_unit": 2,
+    "numeric_code": 144,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LRD",
+    "name": "Liberian Dollar",
+    "minor_unit": 2,
+    "numeric_code": 430,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LSL",
+    "name": "Loti",
+    "minor_unit": 2,
+    "numeric_code": 426,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LTL",
+    "name": "Lithuanian Litas",
+    "minor_unit": 2,
+    "numeric_code": 440,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LUF",
+    "name": "Luxembourg Franc",
+    "minor_unit": null,
+    "numeric_code": 442,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "LYD",
+    "name": "Libyan Dinar",
+    "minor_unit": 3,
+    "numeric_code": 434,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MAD",
+    "name": "Moroccan Dirham",
+    "minor_unit": 2,
+    "numeric_code": 504,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MDL",
+    "name": "Moldovan Leu",
+    "minor_unit": 2,
+    "numeric_code": 498,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MGA",
+    "name": "Malagasy Ariary",
+    "minor_unit": 2,
+    "numeric_code": 969,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MKD",
+    "name": "Denar",
+    "minor_unit": 2,
+    "numeric_code": 807,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MMK",
+    "name": "Kyat",
+    "minor_unit": 2,
+    "numeric_code": 104,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MNT",
+    "name": "Tugrik",
+    "minor_unit": 2,
+    "numeric_code": 496,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MOP",
+    "name": "Pataca",
+    "minor_unit": 2,
+    "numeric_code": 446,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MRO",
+    "name": "Ouguiya",
+    "minor_unit": 2,
+    "numeric_code": 478,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MUR",
+    "name": "Mauritius Rupee",
+    "minor_unit": 2,
+    "numeric_code": 480,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MVR",
+    "name": "Rufiyaa",
+    "minor_unit": 2,
+    "numeric_code": 462,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MWK",
+    "name": "Malawi Kwacha",
+    "minor_unit": 2,
+    "numeric_code": 454,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MXN",
+    "name": "Mexican Peso",
+    "minor_unit": 2,
+    "numeric_code": 484,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MXV",
+    "name": "Mexican Unidad de Inversion (UDI)",
+    "minor_unit": 2,
+    "numeric_code": 979,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MYR",
+    "name": "Malaysian Ringgit",
+    "minor_unit": 2,
+    "numeric_code": 458,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "MZN",
+    "name": "Mozambique Metical",
+    "minor_unit": 2,
+    "numeric_code": 943,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "NAD",
+    "name": "Namibia Dollar",
+    "minor_unit": 2,
+    "numeric_code": 516,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "NGN",
+    "name": "Naira",
+    "minor_unit": 2,
+    "numeric_code": 566,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "NIO",
+    "name": "Cordoba Oro",
+    "minor_unit": 2,
+    "numeric_code": 558,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "NLG",
+    "name": "Netherlands Guilder",
+    "minor_unit": null,
+    "numeric_code": 528,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "NOK",
+    "name": "Norwegian Krone",
+    "minor_unit": 2,
+    "numeric_code": 578,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "NPR",
+    "name": "Nepalese Rupee",
+    "minor_unit": 2,
+    "numeric_code": 524,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "NZD",
+    "name": "New Zealand Dollar",
+    "minor_unit": 2,
+    "numeric_code": 554,
+    "is_legacy": false,
+    "is_major": true,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "OMR",
+    "name": "Rial Omani",
+    "minor_unit": 3,
+    "numeric_code": 512,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PAB",
+    "name": "Balboa",
+    "minor_unit": 2,
+    "numeric_code": 590,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PEN",
+    "name": "Sol",
+    "minor_unit": 2,
+    "numeric_code": 604,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PGK",
+    "name": "Kina",
+    "minor_unit": 2,
+    "numeric_code": 598,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PHP",
+    "name": "Philippine Peso",
+    "minor_unit": 2,
+    "numeric_code": 608,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PKR",
+    "name": "Pakistan Rupee",
+    "minor_unit": 2,
+    "numeric_code": 586,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PLN",
+    "name": "Zloty",
+    "minor_unit": 2,
+    "numeric_code": 985,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PTE",
+    "name": "Portugese Escudo",
+    "minor_unit": null,
+    "numeric_code": 620,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "PYG",
+    "name": "Guarani",
+    "minor_unit": 0,
+    "numeric_code": 600,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "QAR",
+    "name": "Qatari Rial",
+    "minor_unit": 2,
+    "numeric_code": 634,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "RON",
+    "name": "Romanian Leu",
+    "minor_unit": 2,
+    "numeric_code": 946,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "RSD",
+    "name": "Serbian Dinar",
+    "minor_unit": 2,
+    "numeric_code": 941,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "RUB",
+    "name": "Russian Ruble",
+    "minor_unit": 2,
+    "numeric_code": 643,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "RWF",
+    "name": "Rwanda Franc",
+    "minor_unit": 0,
+    "numeric_code": 646,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SAR",
+    "name": "Saudi Riyal",
+    "minor_unit": 2,
+    "numeric_code": 682,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SBD",
+    "name": "Solomon Islands Dollar",
+    "minor_unit": 2,
+    "numeric_code": 90,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SCR",
+    "name": "Seychelles Rupee",
+    "minor_unit": 2,
+    "numeric_code": 690,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SDD",
+    "name": "Sudanese Dinar",
+    "minor_unit": null,
+    "numeric_code": 736,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SDG",
+    "name": "Sudanese Pound",
+    "minor_unit": 2,
+    "numeric_code": 938,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SEK",
+    "name": "Swedish Krona",
+    "minor_unit": 2,
+    "numeric_code": 752,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SGD",
+    "name": "Singapore Dollar",
+    "minor_unit": 2,
+    "numeric_code": 702,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SHP",
+    "name": "Saint Helena Pound",
+    "minor_unit": 2,
+    "numeric_code": 654,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SIT",
+    "name": "Slovenian Tolar",
+    "minor_unit": null,
+    "numeric_code": 705,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SLL",
+    "name": "Leone",
+    "minor_unit": 2,
+    "numeric_code": 694,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SOS",
+    "name": "Somali Shilling",
+    "minor_unit": 2,
+    "numeric_code": 706,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SRD",
+    "name": "Surinam Dollar",
+    "minor_unit": 2,
+    "numeric_code": 968,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SSP",
+    "name": "South Sudanese Pound",
+    "minor_unit": 2,
+    "numeric_code": 728,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "STD",
+    "name": "Dobra",
+    "minor_unit": 2,
+    "numeric_code": 678,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SVC",
+    "name": "El Salvador Colon",
+    "minor_unit": 2,
+    "numeric_code": 222,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SYP",
+    "name": "Syrian Pound",
+    "minor_unit": 2,
+    "numeric_code": 760,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "SZL",
+    "name": "Lilangeni",
+    "minor_unit": 2,
+    "numeric_code": 748,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "THB",
+    "name": "Baht",
+    "minor_unit": 2,
+    "numeric_code": 764,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TJS",
+    "name": "Somoni",
+    "minor_unit": 2,
+    "numeric_code": 972,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TMT",
+    "name": "Turkmenistan New Manat",
+    "minor_unit": 2,
+    "numeric_code": 934,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TND",
+    "name": "Tunisian Dinar",
+    "minor_unit": 3,
+    "numeric_code": 788,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TOP",
+    "name": "Pa\u00c3\u00a2\u00e2\u201a\u00ac\u00e2\u201e\u00a2anga",
+    "minor_unit": 2,
+    "numeric_code": 776,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TRY",
+    "name": "Turkish Lira",
+    "minor_unit": 2,
+    "numeric_code": 949,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TTD",
+    "name": "Trinidad and Tobago Dollar",
+    "minor_unit": 2,
+    "numeric_code": 780,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TWD",
+    "name": "New Taiwan Dollar",
+    "minor_unit": 2,
+    "numeric_code": 901,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "TZS",
+    "name": "Tanzanian Shilling",
+    "minor_unit": 2,
+    "numeric_code": 834,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "UAH",
+    "name": "Hryvnia",
+    "minor_unit": 2,
+    "numeric_code": 980,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "UGX",
+    "name": "Uganda Shilling",
+    "minor_unit": 0,
+    "numeric_code": 800,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "USD",
+    "name": "US Dollar",
+    "minor_unit": 2,
+    "numeric_code": 840,
+    "is_legacy": false,
+    "is_major": true,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "USN",
+    "name": "US Dollar (Next day)",
+    "minor_unit": 2,
+    "numeric_code": 997,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "UYI",
+    "name": "Uruguay Peso en Unidades Indexadas (URUIURUI)",
+    "minor_unit": 0,
+    "numeric_code": 940,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "UYU",
+    "name": "Peso Uruguayo",
+    "minor_unit": 2,
+    "numeric_code": 858,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "UZS",
+    "name": "Uzbekistan Sum",
+    "minor_unit": 2,
+    "numeric_code": 860,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "VEB",
+    "name": "Venezuelan Bol\u00c3\u0192\u00c2\u00advar",
+    "minor_unit": null,
+    "numeric_code": 862,
+    "is_legacy": true,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "VEF",
+    "name": "Bol\u00c3\u0192\u00c2\u00advar",
+    "minor_unit": 2,
+    "numeric_code": 937,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "VND",
+    "name": "Dong",
+    "minor_unit": 0,
+    "numeric_code": 704,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": true,
+    "is_commodity": false
+  },
+  {
+    "ccy": "VUV",
+    "name": "Vatu",
+    "minor_unit": 0,
+    "numeric_code": 548,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "WST",
+    "name": "Tala",
+    "minor_unit": 2,
+    "numeric_code": 882,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XAF",
+    "name": "CFA Franc BEAC",
+    "minor_unit": 0,
+    "numeric_code": 950,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XAG",
+    "name": "Silver",
+    "minor_unit": null,
+    "numeric_code": 961,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": true
+  },
+  {
+    "ccy": "XAU",
+    "name": "Gold",
+    "minor_unit": null,
+    "numeric_code": 959,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": true
+  },
+  {
+    "ccy": "XBA",
+    "name": "Bond Markets Unit European Composite Unit (EURCO)",
+    "minor_unit": null,
+    "numeric_code": 955,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XBB",
+    "name": "Bond Markets Unit European Monetary Unit (E.M.U.-6)",
+    "minor_unit": null,
+    "numeric_code": 956,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XBC",
+    "name": "Bond Markets Unit European Unit of Account 9 (E.U.A.-9)",
+    "minor_unit": null,
+    "numeric_code": 957,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XBD",
+    "name": "Bond Markets Unit European Unit of Account 17 (E.U.A.-17)",
+    "minor_unit": null,
+    "numeric_code": 958,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XCD",
+    "name": "East Caribbean Dollar",
+    "minor_unit": 2,
+    "numeric_code": 951,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XDR",
+    "name": "SDR (Special Drawing Right)",
+    "minor_unit": null,
+    "numeric_code": 960,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XOF",
+    "name": "CFA Franc BCEAO",
+    "minor_unit": 0,
+    "numeric_code": 952,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XPD",
+    "name": "Palladium",
+    "minor_unit": null,
+    "numeric_code": 964,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": true
+  },
+  {
+    "ccy": "XPF",
+    "name": "CFP Franc",
+    "minor_unit": 0,
+    "numeric_code": 953,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XPT",
+    "name": "Platinum",
+    "minor_unit": null,
+    "numeric_code": 962,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": true
+  },
+  {
+    "ccy": "XSU",
+    "name": "Sucre",
+    "minor_unit": null,
+    "numeric_code": 994,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XTS",
+    "name": "Codes specifically reserved for testing purposes",
+    "minor_unit": null,
+    "numeric_code": 963,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XUA",
+    "name": "ADB Unit of Account",
+    "minor_unit": null,
+    "numeric_code": 965,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "XXX",
+    "name": "The codes assigned for transactions where no currency is involved",
+    "minor_unit": null,
+    "numeric_code": 999,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "YER",
+    "name": "Yemeni Rial",
+    "minor_unit": 2,
+    "numeric_code": 886,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ZAR",
+    "name": "Rand",
+    "minor_unit": 2,
+    "numeric_code": 710,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ZMW",
+    "name": "Zambian Kwacha",
+    "minor_unit": 2,
+    "numeric_code": 967,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  },
+  {
+    "ccy": "ZWL",
+    "name": "Zimbabwe Dollar",
+    "minor_unit": 2,
+    "numeric_code": 932,
+    "is_legacy": false,
+    "is_major": false,
+    "is_ndf": false,
+    "is_commodity": false
+  }
+]
