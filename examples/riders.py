@@ -2,10 +2,10 @@
 
 import asyncio
 
-from jetblack_ksqldb import KsqlDbClient
+from jetblack_ksqldb import AsyncKsqlDbClient
 
 
-async def run_query(ksqldb: KsqlDbClient) -> None:
+async def run_query(ksqldb: AsyncKsqlDbClient) -> None:
     sql = """
 -- Mountain View lat, long: 37.4133, -122.1162
 SELECT
@@ -29,7 +29,7 @@ EMIT CHANGES;
         # ['4a7c7b41', 37.4049, -122.0822]
 
 
-async def setup(ksqldb: KsqlDbClient) -> None:
+async def setup(ksqldb: AsyncKsqlDbClient) -> None:
     response = await ksqldb.ksql(
         """
 CREATE STREAM riderLocations
@@ -127,7 +127,7 @@ AS
 async def main() -> None:
     """Entrypoint"""
 
-    ksqldb = KsqlDbClient()
+    ksqldb = AsyncKsqlDbClient()
 
     # await setup(ksqldb)
 

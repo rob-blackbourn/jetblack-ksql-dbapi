@@ -1,9 +1,9 @@
 import asyncio
 
-from jetblack_ksqldb import KsqlDbClient
+from jetblack_ksqldb import AsyncKsqlDbClient
 
 
-async def create_tables(ksqldb: KsqlDbClient) -> None:
+async def create_tables(ksqldb: AsyncKsqlDbClient) -> None:
     response = await ksqldb.ksql(
         """\
 CREATE TABLE user
@@ -21,7 +21,7 @@ CREATE TABLE user
     print(response)
 
 
-async def insert_data(ksqldb: KsqlDbClient) -> None:
+async def insert_data(ksqldb: AsyncKsqlDbClient) -> None:
 
     response = await ksqldb.ksql(
         """\
@@ -33,7 +33,7 @@ INSERT INTO user(user_id, username) VALUES (3, 'harry');
     print(response)
 
 
-async def print_data(ksqldb: KsqlDbClient) -> None:
+async def print_data(ksqldb: AsyncKsqlDbClient) -> None:
     response = await ksqldb.ksql(
         """\
 PRINT user FROM BEGINNING;
@@ -45,7 +45,7 @@ PRINT user FROM BEGINNING;
 async def main() -> None:
     """Entrypoint"""
 
-    ksqldb = KsqlDbClient()
+    ksqldb = AsyncKsqlDbClient()
 
     await create_tables(ksqldb)
     await insert_data(ksqldb)

@@ -3,7 +3,7 @@ from typing import Any, AsyncIterator, Mapping, Self, Sequence
 
 
 from ._binding import BindingConfig, bind_parameters
-from ._client import KsqlDbClient
+from ._async_client import AsyncKsqlDbClient
 from ._paramstyles import ParamStyle
 
 paramstyle: ParamStyle = "pyformat"
@@ -13,7 +13,7 @@ class Connection:
 
     def __init__(
             self,
-            client: KsqlDbClient,
+            client: AsyncKsqlDbClient,
             binding_config: BindingConfig,
     ) -> None:
         self._client = client
@@ -27,7 +27,7 @@ class Connection:
             api_secret: str | None = None,
             binding_config: BindingConfig | None = None,
     ) -> Self:
-        client = KsqlDbClient(url, api_key, api_secret)
+        client = AsyncKsqlDbClient(url, api_key, api_secret)
         return cls(client, binding_config or BindingConfig())
 
 

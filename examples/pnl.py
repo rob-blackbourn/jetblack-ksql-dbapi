@@ -2,7 +2,7 @@ import asyncio
 import json
 from typing import TypedDict
 
-from jetblack_ksqldb import KsqlDbClient
+from jetblack_ksqldb import AsyncKsqlDbClient
 
 
 class CurrencyDict(TypedDict):
@@ -144,7 +144,7 @@ DDL = {
 }
 
 
-async def setup(ksqldb: KsqlDbClient) -> None:
+async def setup(ksqldb: AsyncKsqlDbClient) -> None:
     for name, sql in DDL.items():
         print(f"{name}: {sql}")
         response = await ksqldb.ksql(sql)
@@ -153,7 +153,7 @@ async def setup(ksqldb: KsqlDbClient) -> None:
     print("Done")
 
 
-async def populate(ksqldb: KsqlDbClient) -> None:
+async def populate(ksqldb: AsyncKsqlDbClient) -> None:
     with open("examples/currencies.json", "r") as f:
         currencies = json.load(f)
 
@@ -168,7 +168,7 @@ async def populate(ksqldb: KsqlDbClient) -> None:
 async def main() -> None:
     """Entrypoint"""
 
-    ksqldb = KsqlDbClient()
+    ksqldb = AsyncKsqlDbClient()
 
     await setup(ksqldb)
     await populate(ksqldb)

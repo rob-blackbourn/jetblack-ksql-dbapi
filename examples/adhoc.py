@@ -2,13 +2,13 @@
 
 import asyncio
 
-from jetblack_ksqldb import KsqlDbClient
+from jetblack_ksqldb import AsyncKsqlDbClient
 
 
 async def main() -> None:
     """Entrypoint"""
 
-    ksqldb = KsqlDbClient()
+    ksqldb = AsyncKsqlDbClient()
 
     info = await ksqldb.info()
     print(info)
