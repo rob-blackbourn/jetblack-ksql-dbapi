@@ -161,12 +161,12 @@ def _segmentize(string: str) -> list[str]:
     return segments
 
 
-def convert[ParametersType: (Sequence[Any] | Mapping[str, Any])](
+def convert(
         from_paramstyle: ParamStyle,
         to_paramstyle: ParamStyle,
         query: str,
-        params: ParametersType
-) -> tuple[str, ParametersType]:
+        params: Sequence[Any] | Mapping[str, Any]
+) -> tuple[str, Sequence[Any] | Mapping[str, Any]]:
     if from_paramstyle == to_paramstyle:
         return query, params
 
@@ -228,4 +228,4 @@ def convert[ParametersType: (Sequence[Any] | Mapping[str, Any])](
             else:
                 new_query += segment
 
-    return new_query, cast(ParametersType, new_params)
+    return new_query, new_params

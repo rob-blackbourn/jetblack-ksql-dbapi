@@ -3,7 +3,7 @@ from collections.abc import Callable, Sequence
 from datetime import date, datetime
 from decimal import Decimal
 import re
-from typing import Any, Mapping, NamedTuple
+from typing import Any, Mapping, NamedTuple, cast
 
 from ._exceptions import ProgrammingError
 from ._paramstyles import ParamStyle, convert
@@ -117,7 +117,10 @@ def bind_parameters_sequence(
     match param_style:
 
         case "qmark":
-            query, params = convert('qmark', 'format', query, params)
+            query, params = cast(
+                tuple[str, Sequence[Any]],
+                convert('qmark', 'format', query, params)
+            )
 
         case 'format':
             pass
@@ -139,12 +142,15 @@ def bind_parameters_dict(
     match param_style:
 
         case 'numeric' | 'named':
-            query, params = convert(param_style, 'pyformat', query, params)
+            query, params = cast(
+                tuple[str, Mapping[str, Any]],
+                convert(param_style, 'pyformat', query, params)
+            )
 
         case 'pyformat':
             pass
 
-        case other:
+        case _:
             raise ProgrammingError(f"Invalid param style {param_style}")
 
     escaped_params = escape_parameter_dict(params, config)
