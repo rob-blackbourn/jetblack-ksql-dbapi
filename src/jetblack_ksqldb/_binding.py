@@ -1,9 +1,13 @@
+from base64 import b64encode
 from collections.abc import Callable, Sequence
 from datetime import date, datetime
 from decimal import Decimal
+import re
 from typing import Any, NamedTuple
 
 from ._exceptions import ProgrammingError
+from ._types import ParamStyle
+from ._utils import classname
 
 
 class BindingConfig(NamedTuple):
@@ -12,10 +16,6 @@ class BindingConfig(NamedTuple):
 
 
 _DEFAULT_BINDING_CONFIG = BindingConfig()
-
-
-def classname(obj: object) -> str:
-    return obj.__class__.__name__
 
 
 def raise_if_not_type(value: Any, type_: type | tuple[type]) -> bool:
@@ -38,6 +38,9 @@ def escape_parameter(parameter: Any, config: BindingConfig) -> str:
 
     if isinstance(parameter, str):
         return "'%s'" % parameter.translate(_ESCAPE_TABLE)
+
+    if isinstance(parameter, bytes):
+        return "'%s'" % b64encode(parameter).decode('ascii')
 
     elif isinstance(parameter, int):
         return str(parameter)
@@ -103,3 +106,41 @@ def escape_parameter_dict(
         for parameter in parameters.values()
     )
     return dict(zip(parameters.keys(), values))
+
+
+_QMARK_CMP_REGEX = re.compile(r'(is|like|<|<=|=|>=|>)\s*\?', re.IGNORECASE)
+_QMARK_BETWEEN_REGEX = re.compile(r'BETWEEN\s*\?\s*AND\s*\?', re.IGNORE_CASE)
+
+
+def bind_parameters_sequence(
+        sql: str,
+        parameters: Sequence[Any],
+        param_style: ParamStyle
+) -> str:
+    match param_style:
+
+        case "qmark":
+            sql = re.sub(_QMARK_CMP_REGEX, r'\1 %s', sql)
+            sql = re.sub(_QMARK_BETWEEN_REGEX, 'BETWEEN %s AND %s')
+    return sql
+
+
+def bind_parameters_dict(
+        sql: str,
+        parameters: Sequence[Any],
+        param_style: ParamStyle
+) -> str:
+    return sql
+
+
+def bind_parameters(
+        sql: str,
+        parameters: Sequence[Any] | dict[str, Any] | None,
+        param_style: ParamStyle
+) -> str:
+    if parameters is None:
+        return sql
+    elif isinstance(parameters, Sequence):
+        args = escape_parameter_sequence(parameters)
+    else:
+        args = escape_parameter_dict(parameters)
