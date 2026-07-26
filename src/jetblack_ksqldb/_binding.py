@@ -160,7 +160,7 @@ def bind_parameters_dict(
 
 def bind_parameters(
         query: str,
-        params: Sequence[Any] | dict[str, Any] | None,
+        params: Sequence[Any] | Mapping[str, Any] | None,
         param_style: ParamStyle,
         config: BindingConfig
 ) -> str:
