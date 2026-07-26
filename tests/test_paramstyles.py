@@ -1,21 +1,39 @@
 from jetblack_ksqldb._paramstyles import convert, Parameters, ParamStyle, PARAMSTYLES
 
 
-def test_convert() -> None:
-    sequence_params = ['a', 'b', 'c', 'd']
+def test_convert_to_and_from() -> None:
+    sequence_params = ['a', 'b', 'c', 'd', 1, 2, 3]
     dict_params = {
         'param1': 'a',
         'param2': 'b',
         'param3': 'c',
         'param4': 'd',
+        'param5': 1,
+        'param6': 2,
+        'param7': 3,
     }
 
     tests: dict[ParamStyle, tuple[str, Parameters]] = {
-        'qmark': ('SELECT * FROM ? WHERE ? > ? OR ? IS NOT NULL', sequence_params),
-        'numeric': ('SELECT * FROM :1 WHERE :2 > :3 OR :4 IS NOT NULL', sequence_params),
-        'named': ('SELECT * FROM :param1 WHERE :param2 > :param3 OR :param4 IS NOT NULL', dict_params),
-        'format': ('SELECT * FROM %s WHERE %s > %s OR %s IS NOT NULL', sequence_params),
-        'pyformat': ('SELECT * FROM %(param1)s WHERE %(param2)s > %(param3)s OR %(param4)s IS NOT NULL', dict_params),
+        'qmark': (
+            'SELECT * FROM ? WHERE ? > ? OR ? IS NOT NULL AND ? BETWEEN ? AND ?',
+            sequence_params
+        ),
+        'numeric': (
+            'SELECT * FROM :1 WHERE :2 > :3 OR :4 IS NOT NULL AND :5 BETWEEN :6 AND :7',
+            sequence_params
+        ),
+        'named': (
+            'SELECT * FROM :param1 WHERE :param2 > :param3 OR :param4 IS NOT NULL AND :param5 BETWEEN :param6 AND :param7',
+            dict_params
+        ),
+        'format': (
+            'SELECT * FROM %s WHERE %s > %s OR %s IS NOT NULL AND %s BETWEEN %s AND %s',
+            sequence_params
+        ),
+        'pyformat': (
+            'SELECT * FROM %(param1)s WHERE %(param2)s > %(param3)s OR %(param4)s IS NOT NULL AND %(param5)s BETWEEN %(param6)s AND %(param7)s',
+            dict_params
+        ),
     }
 
     for from_paramstyle in PARAMSTYLES['all']:

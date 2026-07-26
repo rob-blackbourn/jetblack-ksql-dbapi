@@ -3,10 +3,10 @@ from collections.abc import Callable, Sequence
 from datetime import date, datetime
 from decimal import Decimal
 import re
-from typing import Any, NamedTuple
+from typing import Any, Mapping, NamedTuple
 
 from ._exceptions import ProgrammingError
-from ._types import ParamStyle
+from ._paramstyles import ParamStyle, convert
 from ._utils import classname
 
 
@@ -96,7 +96,7 @@ def escape_parameter_sequence(
 
 
 def escape_parameter_dict(
-        parameters: dict[str, Any],
+        parameters: Mapping[str, Any],
         config: BindingConfig | None
 ) -> dict[str, str]:
     if config is None:
@@ -108,39 +108,59 @@ def escape_parameter_dict(
     return dict(zip(parameters.keys(), values))
 
 
-_QMARK_CMP_REGEX = re.compile(r'(is|like|<|<=|=|>=|>)\s*\?', re.IGNORECASE)
-_QMARK_BETWEEN_REGEX = re.compile(r'BETWEEN\s*\?\s*AND\s*\?', re.IGNORE_CASE)
-
-
 def bind_parameters_sequence(
-        sql: str,
-        parameters: Sequence[Any],
-        param_style: ParamStyle
+        query: str,
+        params: Sequence[Any],
+        param_style: ParamStyle,
+        config: BindingConfig
 ) -> str:
     match param_style:
 
         case "qmark":
-            sql = re.sub(_QMARK_CMP_REGEX, r'\1 %s', sql)
-            sql = re.sub(_QMARK_BETWEEN_REGEX, 'BETWEEN %s AND %s')
-    return sql
+            query, params = convert('qmark', 'format', query, params)
+
+        case 'format':
+            pass
+
+        case other:
+            raise ProgrammingError(f"Invalid param style {param_style}")
+
+    escaped_params = escape_parameter_sequence(params, config)
+
+    return query % escaped_params
 
 
 def bind_parameters_dict(
-        sql: str,
-        parameters: Sequence[Any],
-        param_style: ParamStyle
+        query: str,
+        params: Mapping[str, Any],
+        param_style: ParamStyle,
+        config: BindingConfig
 ) -> str:
-    return sql
+    match param_style:
+
+        case 'numeric' | 'named':
+            query, params = convert(param_style, 'pyformat', query, params)
+
+        case 'pyformat':
+            pass
+
+        case other:
+            raise ProgrammingError(f"Invalid param style {param_style}")
+
+    escaped_params = escape_parameter_dict(params, config)
+
+    return query % escaped_params
 
 
 def bind_parameters(
-        sql: str,
-        parameters: Sequence[Any] | dict[str, Any] | None,
-        param_style: ParamStyle
+        query: str,
+        params: Sequence[Any] | dict[str, Any] | None,
+        param_style: ParamStyle,
+        config: BindingConfig
 ) -> str:
-    if parameters is None:
-        return sql
-    elif isinstance(parameters, Sequence):
-        args = escape_parameter_sequence(parameters)
+    if params is None:
+        return query
+    elif isinstance(params, Sequence):
+        return bind_parameters_sequence(query, params, param_style, config)
     else:
-        args = escape_parameter_dict(parameters)
+        return bind_parameters_dict(query, params, param_style, config)
