@@ -1,6 +1,22 @@
 import asyncio
+import json
+from typing import TypedDict
 
 from jetblack_ksqldb import KsqlDbClient
+
+
+class CurrencyDict(TypedDict):
+    ccy: str
+    name: str
+    minor_unit: int
+    major_unit: int
+    numeric_code: int
+    is_legacy: bool
+    is_major: bool
+    is_ndf: bool
+    is_commodity: bool
+    is_per_usd: bool
+
 
 SECURITY_TABLE_DDL = """\
 CREATE OR REPLACE TABLE security
@@ -85,6 +101,14 @@ CURRENCY_TABLE_DDL = """\
 CREATE OR REPLACE TABLE currency
 (
     ccy             VARCHAR PRIMARY KEY,
+    name            VARCHAR,
+    minor_unit      INT,
+    major_unit      INT,
+    numeric_code    INT,
+    is_legacy       BOOLEAN,
+    is_major        BOOLEAN,
+    is_ndf          BOOLEAN,
+    is_commodity    BOOLEAN,
     is_per_usd      BOOLEAN
 )
 WITH (
@@ -129,44 +153,25 @@ async def setup(ksqldb: KsqlDbClient) -> None:
     print("Done")
 
 
+async def populate(ksqldb: KsqlDbClient) -> None:
+    with open("examples/currencies.json", "r") as f:
+        currencies = json.load(f)
+
+    for currency in currencies:
+        response = await ksqldb.ksql(
+            f"INSERT INTO currency(ccy, name, minor_unit, major_unit, numeric_code, is_legacy, is_major, is_ndf, is_commodity) "
+            "VALUES ('{currency['ccy']}', {str(currency['is_per_usd']).lower()});"
+        )
+        print(response)
+
+
 async def main() -> None:
     """Entrypoint"""
 
     ksqldb = KsqlDbClient()
 
     await setup(ksqldb)
-
-#     response = await ksqldb.ksql(
-#         """\
-# CREATE TABLE user
-# (
-#     user_id BIGINT  PRIMARY KEY,
-#     username        VARCHAR
-# ) WITH (
-#     kafka_topic='user',
-#     value_format='json',
-#     key_format='json',
-#     partitions=1
-# );
-# """
-#     )
-#     print(response)
-
-#     response = await ksqldb.ksql(
-#         """\
-# INSERT INTO user(user_id, username) VALUES (1, 'tom');
-# INSERT INTO user(user_id, username) VALUES (2, 'dick');
-# INSERT INTO user(user_id, username) VALUES (3, 'harry');
-# """
-#     )
-#     print(response)
-
-#     response = await ksqldb.ksql(
-#         """\
-# PRINT user FROM BEGINNING;
-# """
-#     )
-#     print(response)
+    await populate(ksqldb)
 
 
 if __name__ == "__main__":
