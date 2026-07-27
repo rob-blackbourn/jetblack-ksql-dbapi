@@ -33,7 +33,12 @@ class AsyncKsqlDbClient:
             if api_key and api_secret else
             None
         )
-        self._client = AsyncClient(auth=auth, http1=False, http2=True)
+        self._client = AsyncClient(
+            base_url=url,
+            auth=auth,
+            http1=False,
+            http2=True
+        )
 
     async def close(self) -> None:
         await self._client.aclose()
@@ -48,7 +53,7 @@ class AsyncKsqlDbClient:
         }
 
         response = await self._client.get(
-            f"{self._url}/info",
+            "/info",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
         )
@@ -65,7 +70,7 @@ class AsyncKsqlDbClient:
         }
 
         response = await self._client.get(
-            f"{self._url}/healthcheck",
+            "/healthcheck",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
         )
@@ -95,7 +100,7 @@ class AsyncKsqlDbClient:
             body['commandSequenceNumber'] = command_sequence_number
 
         response = await self._client.post(
-            f"{self._url}/ksql",
+            "/ksql",
             headers=headers,
             json=body,
             timeout=timeout or USE_CLIENT_DEFAULT
@@ -131,7 +136,7 @@ class AsyncKsqlDbClient:
 
         async with self._client.stream(
             "POST",
-            f"{self._url}/query",
+            "/query",
             headers=headers,
             json=body,
             timeout=Timeout(timeout, read=None)
@@ -156,7 +161,7 @@ class AsyncKsqlDbClient:
         }
 
         response = await self._client.get(
-            f"{self._url}/status/{command_id}",
+            "/status/{command_id}",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
         )
@@ -181,7 +186,7 @@ class AsyncKsqlDbClient:
 
         async with self._client.stream(
             "POST",
-            f"{self._url}/query-stream",
+            "/query-stream",
             headers=headers,
             json=body,
             timeout=Timeout(timeout, read=None)
@@ -210,7 +215,7 @@ class AsyncKsqlDbClient:
         }
 
         response = await self._client.post(
-            f"{self._url}/close-query",
+            "/close-query",
             headers=headers,
             json=body,
             timeout=timeout
@@ -231,7 +236,7 @@ class AsyncKsqlDbClient:
 
         async with self._client.stream(
             "POST",
-            f"{self._url}/inserts-stream",
+            "/inserts-stream",
             headers=headers,
             content=body,
         ) as response:
