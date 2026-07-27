@@ -1,7 +1,7 @@
 """jetblack-ksqldb"""
 
 from ._async_client import AsyncKsqlDbClient
-from ._dbapi import Connection, Cursor, connect, paramstyle
+# from ._dbapi import Connection, Cursor, connect, paramstyle
 from ._exceptions import (
     Warning,
     Error,
@@ -20,11 +20,13 @@ apilevel = "2.0"
 threadsafety = 2
 
 __all__ = [
+    # client
     'AsyncKsqlDbClient',
-    'Connection',
-    'Cursor',
-    'connect',
-    'paramstyle',
+    # # dbapi
+    # 'Connection',
+    # 'Cursor',
+    # 'connect',
+    # 'paramstyle',
 
     # exceptions
     'Warning',

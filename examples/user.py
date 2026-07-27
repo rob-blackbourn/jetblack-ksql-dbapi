@@ -42,14 +42,24 @@ PRINT user FROM BEGINNING;
     print(response)
 
 
+async def select_all(ksqldb: AsyncKsqlDbClient) -> None:
+    async for row in ksqldb.query_stream(
+        """\
+SELECT * FROM user;
+"""
+    ):
+        print(row)
+
+
 async def main() -> None:
     """Entrypoint"""
 
     ksqldb = AsyncKsqlDbClient()
 
-    await create_tables(ksqldb)
-    await insert_data(ksqldb)
-    await print_data(ksqldb)
+    # await create_tables(ksqldb)
+    # await insert_data(ksqldb)
+    # await print_data(ksqldb)
+    await select_all(ksqldb)
 
 
 if __name__ == "__main__":

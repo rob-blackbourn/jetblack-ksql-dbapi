@@ -31,6 +31,16 @@ EMIT CHANGES;
 
 async def setup(ksqldb: AsyncKsqlDbClient) -> None:
     response = await ksqldb.ksql(
+        """DROP TABLE IF EXISTS ridersNearMountainView;"""
+    )
+    response = await ksqldb.ksql(
+        """DROP TABLE IF EXISTS currentLocation;"""
+    )
+    response = await ksqldb.ksql(
+        """DROP STREAM IF EXISTS riderLocations;"""
+    )
+
+    response = await ksqldb.ksql(
         """
 CREATE STREAM riderLocations
 (
@@ -129,7 +139,7 @@ async def main() -> None:
 
     ksqldb = AsyncKsqlDbClient()
 
-    # await setup(ksqldb)
+    await setup(ksqldb)
 
     query_task = asyncio.create_task(run_query(ksqldb))
 
@@ -162,6 +172,8 @@ async def main() -> None:
         await query_task
     except asyncio.CancelledError:
         pass
+
+    await ksqldb.close()
 
     print("Done")
 

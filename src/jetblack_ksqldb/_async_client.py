@@ -33,6 +33,10 @@ class AsyncKsqlDbClient:
             if api_key and api_secret else
             None
         )
+        self._client = AsyncClient(auth=self._auth, http1=False, http2=True)
+
+    async def close(self) -> None:
+        await self._client.aclose()
 
     async def info(
             self,
@@ -43,13 +47,13 @@ class AsyncKsqlDbClient:
             "content-type": CONTENT_TYPE_JSON
         }
 
-        async with AsyncClient(headers=headers, auth=self._auth) as client:
-            response = await client.get(
-                f"{self._url}/info",
-                timeout=timeout or USE_CLIENT_DEFAULT
-            )
-            response.raise_for_status()
-            return response.json()
+        response = await self._client.get(
+            f"{self._url}/info",
+            headers=headers,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        response.raise_for_status()
+        return response.json()
 
     async def healthcheck(
             self,
@@ -60,13 +64,13 @@ class AsyncKsqlDbClient:
             "content-type": CONTENT_TYPE_JSON
         }
 
-        async with AsyncClient(headers=headers, auth=self._auth) as client:
-            response = await client.get(
-                f"{self._url}/healthcheck",
-                timeout=timeout or USE_CLIENT_DEFAULT
-            )
-            response.raise_for_status()
-            return response.json()
+        response = await self._client.get(
+            f"{self._url}/healthcheck",
+            headers=headers,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        response.raise_for_status()
+        return response.json()
 
     async def ksql(
             self,
@@ -90,24 +94,24 @@ class AsyncKsqlDbClient:
         if command_sequence_number is not None:
             body['commandSequenceNumber'] = command_sequence_number
 
-        async with AsyncClient(headers=headers, auth=self._auth) as client:
-            response = await client.post(
-                f"{self._url}/ksql",
-                json=body,
-                timeout=timeout or USE_CLIENT_DEFAULT
-            )
-            if response.is_success:
-                return response.json()
+        response = await self._client.post(
+            f"{self._url}/ksql",
+            headers=headers,
+            json=body,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        if response.is_success:
+            return response.json()
 
-            if response.status_code == httpx.codes.BAD_REQUEST:
-                error = create_ksql_error(response.json())
-                raise error
+        if response.status_code == httpx.codes.BAD_REQUEST:
+            error = create_ksql_error(response.json())
+            raise error
 
-            raise HTTPStatusError(
-                f"{response.status_code}: {response.reason_phrase}",
-                request=response.request,
-                response=response
-            )
+        raise HTTPStatusError(
+            f"{response.status_code}: {response.reason_phrase}",
+            request=response.request,
+            response=response
+        )
 
     async def query(
             self,
@@ -125,21 +129,21 @@ class AsyncKsqlDbClient:
             "streamsProperties": streams_properties or {},
         }
 
-        async with AsyncClient(headers=headers, auth=self._auth) as client:
-            async with client.stream(
-                "POST",
-                f"{self._url}/query",
-                json=body,
-                timeout=Timeout(timeout, read=None)
-            ) as response:
-                response.raise_for_status()
-                meta_data: QueryMetaData | None = None
-                async for line in response.aiter_lines():
-                    data = json.loads(line)
-                    if meta_data is None:
-                        meta_data = cast(QueryMetaData, data)
-                    else:
-                        yield dict(zip(meta_data["columnNames"], data))
+        async with self._client.stream(
+            "POST",
+            f"{self._url}/query",
+            headers=headers,
+            json=body,
+            timeout=Timeout(timeout, read=None)
+        ) as response:
+            response.raise_for_status()
+            meta_data: QueryMetaData | None = None
+            async for line in response.aiter_lines():
+                data = json.loads(line)
+                if meta_data is None:
+                    meta_data = cast(QueryMetaData, data)
+                else:
+                    yield dict(zip(meta_data["columnNames"], data))
 
     async def queury_status(
             self,
@@ -151,13 +155,13 @@ class AsyncKsqlDbClient:
             "content-type": CONTENT_TYPE_JSON
         }
 
-        async with AsyncClient(headers=headers, auth=self._auth) as client:
-            response = await client.get(
-                f"{self._url}/status/{command_id}",
-                timeout=timeout or USE_CLIENT_DEFAULT
-            )
-            response.raise_for_status()
-            return response.json()
+        response = await self._client.get(
+            f"{self._url}/status/{command_id}",
+            headers=headers,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        response.raise_for_status()
+        return response.json()
 
     async def query_stream(
             self,
@@ -175,21 +179,21 @@ class AsyncKsqlDbClient:
             "properties": properties or {},
         }
 
-        async with AsyncClient(headers=headers, auth=self._auth, http1=False, http2=True) as client:
-            async with client.stream(
-                "POST",
-                f"{self._url}/query-stream",
-                json=body,
-                timeout=Timeout(timeout, read=None)
-            ) as response:
-                response.raise_for_status()
-                meta_data: QueryMetaData | None = None
-                async for line in response.aiter_lines():
-                    data = json.loads(line)
-                    if meta_data is None:
-                        meta_data = cast(QueryMetaData, data)
-                    else:
-                        yield dict(zip(meta_data['columnNames'], data))
+        async with self._client.stream(
+            "POST",
+            f"{self._url}/query-stream",
+            headers=headers,
+            json=body,
+            timeout=Timeout(timeout, read=None)
+        ) as response:
+            response.raise_for_status()
+            meta_data: QueryMetaData | None = None
+            async for line in response.aiter_lines():
+                data = json.loads(line)
+                if meta_data is None:
+                    meta_data = cast(QueryMetaData, data)
+                else:
+                    yield dict(zip(meta_data['columnNames'], data))
 
     async def close_query(
             self,
@@ -205,13 +209,13 @@ class AsyncKsqlDbClient:
             "queryId": query_id
         }
 
-        async with AsyncClient(headers=headers, auth=self._auth) as client:
-            response = await client.post(
-                f"{self._url}/close-query",
-                json=body,
-                timeout=timeout
-            )
-            return response.is_success
+        response = await self._client.post(
+            f"{self._url}/close-query",
+            headers=headers,
+            json=body,
+            timeout=timeout
+        )
+        return response.is_success
 
     async def inserts_stream(
             self,
@@ -225,11 +229,11 @@ class AsyncKsqlDbClient:
         body = json.dumps({"target": target}) + "\n"
         body += "\n".join(json.dumps(row) for row in rows)
 
-        async with AsyncClient(headers=headers, auth=self._auth, http1=False, http2=True) as client:
-            async with client.stream(
-                "POST",
-                f"{self._url}/inserts-stream",
-                content=body,
-            ) as response:
-                async for line in response.aiter_lines():
-                    yield json.loads(line)
+        async with self._client.stream(
+            "POST",
+            f"{self._url}/inserts-stream",
+            headers=headers,
+            content=body,
+        ) as response:
+            async for line in response.aiter_lines():
+                yield json.loads(line)
