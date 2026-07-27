@@ -33,7 +33,7 @@ class KsqlDbClient:
             if api_key and api_secret else
             None
         )
-        self._client = Client(auth=auth, http1=False, http2=True)
+        self._client = Client(base_url=url, auth=auth, http1=False, http2=True)
 
     def close(self) -> None:
         self._client.close()
@@ -48,7 +48,7 @@ class KsqlDbClient:
         }
 
         response = self._client.get(
-            f"{self._url}/info",
+            "/info",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
         )
@@ -65,7 +65,7 @@ class KsqlDbClient:
         }
 
         response = self._client.get(
-            f"{self._url}/healthcheck",
+            "/healthcheck",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
         )
@@ -95,7 +95,7 @@ class KsqlDbClient:
             body['commandSequenceNumber'] = command_sequence_number
 
         response = self._client.post(
-            f"{self._url}/ksql",
+            "/ksql",
             headers=headers,
             json=body,
             timeout=timeout or USE_CLIENT_DEFAULT
@@ -131,7 +131,7 @@ class KsqlDbClient:
 
         with self._client.stream(
             "POST",
-            f"{self._url}/query",
+            "/query",
             headers=headers,
             json=body,
             timeout=Timeout(timeout, read=None)
@@ -156,7 +156,7 @@ class KsqlDbClient:
         }
 
         response = self._client.get(
-            f"{self._url}/status/{command_id}",
+            f"/status/{command_id}",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
         )
@@ -181,7 +181,7 @@ class KsqlDbClient:
 
         with self._client.stream(
             "POST",
-            f"{self._url}/query-stream",
+            "/query-stream",
             headers=headers,
             json=body,
             timeout=Timeout(timeout, read=None)
@@ -210,7 +210,7 @@ class KsqlDbClient:
         }
 
         response = self._client.post(
-            f"{self._url}/close-query",
+            "/close-query",
             headers=headers,
             json=body,
             timeout=timeout
@@ -231,7 +231,7 @@ class KsqlDbClient:
 
         with self._client.stream(
             "POST",
-            f"{self._url}/inserts-stream",
+            "/inserts-stream",
             headers=headers,
             content=body,
         ) as response:

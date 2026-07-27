@@ -161,7 +161,7 @@ class AsyncKsqlDbClient:
         }
 
         response = await self._client.get(
-            "/status/{command_id}",
+            f"/status/{command_id}",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
         )
