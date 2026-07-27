@@ -1,9 +1,9 @@
 import re
-from typing import Any, AsyncIterator, Mapping, Self, Sequence
+from typing import Any, Iterator, Mapping, Self, Sequence
 
 
 from ._binding import BindingConfig, bind_parameters
-from ._async_client import AsyncKsqlDbClient
+from ._client import KsqlDbClient
 from ._paramstyles import ParamStyle
 
 paramstyle: ParamStyle = "pyformat"
@@ -13,7 +13,7 @@ class Connection:
 
     def __init__(
             self,
-            client: AsyncKsqlDbClient,
+            client: KsqlDbClient,
             binding_config: BindingConfig,
     ) -> None:
         self._client = client
@@ -27,7 +27,7 @@ class Connection:
             api_secret: str | None = None,
             binding_config: BindingConfig | None = None,
     ) -> Self:
-        client = AsyncKsqlDbClient(url, api_key, api_secret)
+        client = KsqlDbClient(url, api_key, api_secret)
         return cls(client, binding_config or BindingConfig())
 
 
@@ -45,9 +45,9 @@ class Cursor:
     ) -> None:
         self._connection = connection
         self._binding_config = binding_config
-        self._result: AsyncIterator | None
+        self._result: Iterator | None
 
-    async def execute(self, query: str, params: Sequence[Any] | Mapping[str, Any] | None) -> None:
+    def execute(self, query: str, params: Sequence[Any] | Mapping[str, Any] | None) -> None:
         global paramstyle
         if params:
             bound_query = bind_parameters(
@@ -62,7 +62,7 @@ class Cursor:
         bound_query = re.sub(_SQL_COMMENTS, "", bound_query)
         bound_query = re.sub(r'\s+', " ", bound_query)
         if bound_query.upper().startswith("SELECT"):
-            yield await self._connection._client.ksql(query)
+            yield self._connection._client.ksql(query)
         else:
             return self._connection._client.query(query)
 

@@ -1,0 +1,239 @@
+"""A client for ksqlDB"""
+
+import json
+from typing import Any, AsyncIterator, Mapping, cast
+
+import httpx
+from httpx import (
+    AsyncClient,
+    HTTPStatusError,
+    Timeout,
+    USE_CLIENT_DEFAULT,
+    BasicAuth
+)
+
+from .types import QueryMetaData, create_ksql_error
+
+CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
+CONTENT_TYPE_NDJSON = "application/vnd.ksqlapi.delimited.v1"
+
+
+class AsyncKsqlDbClient:
+    """A client for the ksqlDB service"""
+
+    def __init__(
+            self,
+            url: str = "http://localhost:8088",
+            api_key: str | None = None,
+            api_secret: str | None = None
+    ) -> None:
+        self._url = url
+        auth = (
+            BasicAuth(api_key, api_secret)
+            if api_key and api_secret else
+            None
+        )
+        self._client = AsyncClient(auth=auth, http1=False, http2=True)
+
+    async def close(self) -> None:
+        await self._client.aclose()
+
+    async def info(
+            self,
+            *,
+            timeout: Timeout | None = None
+    ) -> dict[str, Any]:
+        headers = {
+            "content-type": CONTENT_TYPE_JSON
+        }
+
+        response = await self._client.get(
+            f"{self._url}/info",
+            headers=headers,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        response.raise_for_status()
+        return response.json()
+
+    async def healthcheck(
+            self,
+            *,
+            timeout: Timeout | None = None
+    ) -> dict[str, Any]:
+        headers = {
+            "content-type": CONTENT_TYPE_JSON
+        }
+
+        response = await self._client.get(
+            f"{self._url}/healthcheck",
+            headers=headers,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        response.raise_for_status()
+        return response.json()
+
+    async def ksql(
+            self,
+            ksql: str,
+            *,
+            streams_properties: Mapping[str, str] | None = None,
+            session_variables: Mapping[str, str] | None = None,
+            command_sequence_number: int | None = None,
+            timeout: Timeout | None = None
+    ) -> list[Any]:
+        headers = {
+            "content-type": CONTENT_TYPE_JSON
+        }
+
+        body: dict[str, Any] = {
+            "ksql": ksql,
+            "streamsProperties": streams_properties or {},
+        }
+        if session_variables is not None:
+            body['sessionVariables'] = session_variables
+        if command_sequence_number is not None:
+            body['commandSequenceNumber'] = command_sequence_number
+
+        response = await self._client.post(
+            f"{self._url}/ksql",
+            headers=headers,
+            json=body,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        if response.is_success:
+            return response.json()
+
+        if response.status_code == httpx.codes.BAD_REQUEST:
+            error = create_ksql_error(response.json())
+            raise error
+
+        raise HTTPStatusError(
+            f"{response.status_code}: {response.reason_phrase}",
+            request=response.request,
+            response=response
+        )
+
+    async def query(
+            self,
+            ksql: str,
+            *,
+            streams_properties: Mapping[str, str] | None = None,
+            timeout: float = 1.0
+    ) -> AsyncIterator[Any]:
+        headers = {
+            "content-type": CONTENT_TYPE_JSON
+        }
+
+        body: dict[str, Any] = {
+            "ksql": ksql,
+            "streamsProperties": streams_properties or {},
+        }
+
+        async with self._client.stream(
+            "POST",
+            f"{self._url}/query",
+            headers=headers,
+            json=body,
+            timeout=Timeout(timeout, read=None)
+        ) as response:
+            response.raise_for_status()
+            meta_data: QueryMetaData | None = None
+            async for line in response.aiter_lines():
+                data = json.loads(line)
+                if meta_data is None:
+                    meta_data = cast(QueryMetaData, data)
+                else:
+                    yield dict(zip(meta_data["columnNames"], data))
+
+    async def queury_status(
+            self,
+            command_id: str,
+            *,
+            timeout: Timeout | None = None
+    ) -> dict[str, Any]:
+        headers = {
+            "content-type": CONTENT_TYPE_JSON
+        }
+
+        response = await self._client.get(
+            f"{self._url}/status/{command_id}",
+            headers=headers,
+            timeout=timeout or USE_CLIENT_DEFAULT
+        )
+        response.raise_for_status()
+        return response.json()
+
+    async def query_stream(
+            self,
+            sql: str,
+            *,
+            timeout: float = 1.0,
+            properties: dict[str, Any] | None = None
+    ) -> AsyncIterator[Any]:
+        headers = {
+            "content-type": CONTENT_TYPE_NDJSON
+        }
+
+        body: dict[str, Any] = {
+            "sql": sql,
+            "properties": properties or {},
+        }
+
+        async with self._client.stream(
+            "POST",
+            f"{self._url}/query-stream",
+            headers=headers,
+            json=body,
+            timeout=Timeout(timeout, read=None)
+        ) as response:
+            response.raise_for_status()
+            meta_data: QueryMetaData | None = None
+            async for line in response.aiter_lines():
+                data = json.loads(line)
+                if meta_data is None:
+                    meta_data = cast(QueryMetaData, data)
+                else:
+                    yield dict(zip(meta_data['columnNames'], data))
+
+    async def close_query(
+            self,
+            query_id: str,
+            *,
+            timeout: Timeout | None = None,
+    ) -> bool:
+        headers = {
+            "content-type": CONTENT_TYPE_JSON
+        }
+
+        body = {
+            "queryId": query_id
+        }
+
+        response = await self._client.post(
+            f"{self._url}/close-query",
+            headers=headers,
+            json=body,
+            timeout=timeout
+        )
+        return response.is_success
+
+    async def inserts_stream(
+            self,
+            target: str,
+            rows: list[Any]
+    ) -> AsyncIterator[Any]:
+        headers = {
+            "content-type": CONTENT_TYPE_NDJSON
+        }
+
+        body = json.dumps({"target": target}) + "\n"
+        body += "\n".join(json.dumps(row) for row in rows)
+
+        async with self._client.stream(
+            "POST",
+            f"{self._url}/inserts-stream",
+            headers=headers,
+            content=body,
+        ) as response:
+            async for line in response.aiter_lines():
+                yield json.loads(line)

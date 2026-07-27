@@ -1,6 +1,6 @@
 """jetblack-ksqldb"""
 
-from ._async_client import AsyncKsqlDbClient
+from ._client_async import AsyncKsqlDbClient
 # from ._dbapi import Connection, Cursor, connect, paramstyle
 from ._exceptions import (
     Warning,

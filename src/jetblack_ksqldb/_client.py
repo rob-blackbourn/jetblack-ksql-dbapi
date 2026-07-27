@@ -1,11 +1,11 @@
 """A client for ksqlDB"""
 
 import json
-from typing import Any, AsyncIterator, Mapping, cast
+from typing import Any, Iterator, Mapping, cast
 
 import httpx
 from httpx import (
-    AsyncClient,
+    Client,
     HTTPStatusError,
     Timeout,
     USE_CLIENT_DEFAULT,
@@ -18,7 +18,7 @@ CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_NDJSON = "application/vnd.ksqlapi.delimited.v1"
 
 
-class AsyncKsqlDbClient:
+class KsqlDbClient:
     """A client for the ksqlDB service"""
 
     def __init__(
@@ -28,17 +28,17 @@ class AsyncKsqlDbClient:
             api_secret: str | None = None
     ) -> None:
         self._url = url
-        self._auth = (
+        auth = (
             BasicAuth(api_key, api_secret)
             if api_key and api_secret else
             None
         )
-        self._client = AsyncClient(auth=self._auth, http1=False, http2=True)
+        self._client = Client(auth=auth, http1=False, http2=True)
 
-    async def close(self) -> None:
-        await self._client.aclose()
+    def close(self) -> None:
+        self._client.close()
 
-    async def info(
+    def info(
             self,
             *,
             timeout: Timeout | None = None
@@ -47,7 +47,7 @@ class AsyncKsqlDbClient:
             "content-type": CONTENT_TYPE_JSON
         }
 
-        response = await self._client.get(
+        response = self._client.get(
             f"{self._url}/info",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
@@ -55,7 +55,7 @@ class AsyncKsqlDbClient:
         response.raise_for_status()
         return response.json()
 
-    async def healthcheck(
+    def healthcheck(
             self,
             *,
             timeout: Timeout | None = None
@@ -64,7 +64,7 @@ class AsyncKsqlDbClient:
             "content-type": CONTENT_TYPE_JSON
         }
 
-        response = await self._client.get(
+        response = self._client.get(
             f"{self._url}/healthcheck",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
@@ -72,7 +72,7 @@ class AsyncKsqlDbClient:
         response.raise_for_status()
         return response.json()
 
-    async def ksql(
+    def ksql(
             self,
             ksql: str,
             *,
@@ -94,7 +94,7 @@ class AsyncKsqlDbClient:
         if command_sequence_number is not None:
             body['commandSequenceNumber'] = command_sequence_number
 
-        response = await self._client.post(
+        response = self._client.post(
             f"{self._url}/ksql",
             headers=headers,
             json=body,
@@ -113,13 +113,13 @@ class AsyncKsqlDbClient:
             response=response
         )
 
-    async def query(
+    def query(
             self,
             ksql: str,
             *,
             streams_properties: Mapping[str, str] | None = None,
             timeout: float = 1.0
-    ) -> AsyncIterator[Any]:
+    ) -> Iterator[Any]:
         headers = {
             "content-type": CONTENT_TYPE_JSON
         }
@@ -129,7 +129,7 @@ class AsyncKsqlDbClient:
             "streamsProperties": streams_properties or {},
         }
 
-        async with self._client.stream(
+        with self._client.stream(
             "POST",
             f"{self._url}/query",
             headers=headers,
@@ -138,14 +138,14 @@ class AsyncKsqlDbClient:
         ) as response:
             response.raise_for_status()
             meta_data: QueryMetaData | None = None
-            async for line in response.aiter_lines():
+            for line in response.iter_lines():
                 data = json.loads(line)
                 if meta_data is None:
                     meta_data = cast(QueryMetaData, data)
                 else:
                     yield dict(zip(meta_data["columnNames"], data))
 
-    async def queury_status(
+    def queury_status(
             self,
             command_id: str,
             *,
@@ -155,7 +155,7 @@ class AsyncKsqlDbClient:
             "content-type": CONTENT_TYPE_JSON
         }
 
-        response = await self._client.get(
+        response = self._client.get(
             f"{self._url}/status/{command_id}",
             headers=headers,
             timeout=timeout or USE_CLIENT_DEFAULT
@@ -163,13 +163,13 @@ class AsyncKsqlDbClient:
         response.raise_for_status()
         return response.json()
 
-    async def query_stream(
+    def query_stream(
             self,
             sql: str,
             *,
             timeout: float = 1.0,
             properties: dict[str, Any] | None = None
-    ) -> AsyncIterator[Any]:
+    ) -> Iterator[Any]:
         headers = {
             "content-type": CONTENT_TYPE_NDJSON
         }
@@ -179,7 +179,7 @@ class AsyncKsqlDbClient:
             "properties": properties or {},
         }
 
-        async with self._client.stream(
+        with self._client.stream(
             "POST",
             f"{self._url}/query-stream",
             headers=headers,
@@ -188,14 +188,14 @@ class AsyncKsqlDbClient:
         ) as response:
             response.raise_for_status()
             meta_data: QueryMetaData | None = None
-            async for line in response.aiter_lines():
+            for line in response.iter_lines():
                 data = json.loads(line)
                 if meta_data is None:
                     meta_data = cast(QueryMetaData, data)
                 else:
                     yield dict(zip(meta_data['columnNames'], data))
 
-    async def close_query(
+    def close_query(
             self,
             query_id: str,
             *,
@@ -209,7 +209,7 @@ class AsyncKsqlDbClient:
             "queryId": query_id
         }
 
-        response = await self._client.post(
+        response = self._client.post(
             f"{self._url}/close-query",
             headers=headers,
             json=body,
@@ -217,11 +217,11 @@ class AsyncKsqlDbClient:
         )
         return response.is_success
 
-    async def inserts_stream(
+    def inserts_stream(
             self,
             target: str,
             rows: list[Any]
-    ) -> AsyncIterator[Any]:
+    ) -> Iterator[Any]:
         headers = {
             "content-type": CONTENT_TYPE_NDJSON
         }
@@ -229,11 +229,11 @@ class AsyncKsqlDbClient:
         body = json.dumps({"target": target}) + "\n"
         body += "\n".join(json.dumps(row) for row in rows)
 
-        async with self._client.stream(
+        with self._client.stream(
             "POST",
             f"{self._url}/inserts-stream",
             headers=headers,
             content=body,
         ) as response:
-            async for line in response.aiter_lines():
+            for line in response.iter_lines():
                 yield json.loads(line)
