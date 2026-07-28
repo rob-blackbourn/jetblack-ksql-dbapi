@@ -1,6 +1,8 @@
 import asyncio
+from datetime import date, datetime
+from decimal import Decimal
 import json
-from typing import TypedDict
+from typing import Any, TypedDict, cast
 
 from jetblack_ksqldb import AsyncKsqlDbClient
 
@@ -9,7 +11,6 @@ class CurrencyDict(TypedDict):
     ccy: str
     name: str
     minor_unit: int
-    major_unit: int
     numeric_code: int
     is_legacy: bool
     is_major: bool
@@ -19,7 +20,7 @@ class CurrencyDict(TypedDict):
 
 
 SECURITY_TABLE_DDL = """\
-CREATE OR REPLACE TABLE security
+CREATE OR REPLACE TABLE security_table
 (
     security_id     BIGINT  PRIMARY KEY,
     ticker          VARCHAR,
@@ -34,7 +35,7 @@ CREATE OR REPLACE TABLE security
 );"""
 
 STRATEGY_TABLE_DDL = """\
-CREATE OR REPLACE TABLE strategy
+CREATE OR REPLACE TABLE strategy_table
 (
     strategy_id     BIGINT  PRIMARY KEY,
     name            VARCHAR,
@@ -66,7 +67,7 @@ WITH (
 """
 
 POSITION_TABLE_DDL = """\
-CREATE OR REPLACE TABLE position
+CREATE OR REPLACE TABLE position_table
 (
     security_id     BIGINT PRIMARY KEY,
     strategy_id     BIGINT PRIMARY KEY,
@@ -98,12 +99,11 @@ WITH (
 """
 
 CURRENCY_TABLE_DDL = """\
-CREATE OR REPLACE TABLE currency
+CREATE OR REPLACE TABLE currency_table
 (
     ccy             VARCHAR PRIMARY KEY,
     name            VARCHAR,
     minor_unit      INT,
-    major_unit      INT,
     numeric_code    INT,
     is_legacy       BOOLEAN,
     is_major        BOOLEAN,
@@ -118,6 +118,10 @@ WITH (
     partitions=1
 );
 """
+
+CURRENCY_QUERYABLE_DDL = """\
+CREATE TABLE currency AS
+SELECT * FROM currency_table;"""
 
 FX_RATE_STREAM_DDL = """\
 CREATE OR REPLACE STREAM fx_rate
@@ -134,12 +138,13 @@ WITH (
 """
 
 DDL = {
-    'security': SECURITY_TABLE_DDL,
-    'strategy': STRATEGY_TABLE_DDL,
+    'security_table': SECURITY_TABLE_DDL,
+    'strategy_table': STRATEGY_TABLE_DDL,
     'trade': TRADE_STREAM_DDL,
-    'position': POSITION_TABLE_DDL,
+    'position_table': POSITION_TABLE_DDL,
     'price': PRICE_STREAM_DDL,
-    'currency': CURRENCY_TABLE_DDL,
+    'currency_table': CURRENCY_TABLE_DDL,
+    'currency_queryable': CURRENCY_QUERYABLE_DDL,
     'fx_rate': FX_RATE_STREAM_DDL,
 }
 
@@ -153,16 +158,64 @@ async def setup(ksqldb: AsyncKsqlDbClient) -> None:
     print("Done")
 
 
+def to_sql(value: Any) -> str:
+    match value:
+        case str():
+            return f"'{value}'"
+        case int():
+            return str(value)
+        case float():
+            return str(value)
+        case Decimal():
+            return str(value)
+        case bool():
+            return 'true' if value else 'false'
+        case date():
+            return f"'{value}'"
+        case datetime():
+            return f"'{value}'"
+        case None:
+            return "NULL"
+        case _:
+            raise ValueError(f"Unhandled type: {value}")
+
+
 async def populate(ksqldb: AsyncKsqlDbClient) -> None:
     with open("examples/currencies.json", "r") as f:
-        currencies = json.load(f)
+        currencies = cast(list[CurrencyDict], json.load(f))
 
     for currency in currencies:
-        response = await ksqldb.ksql(
-            f"INSERT INTO currency(ccy, name, minor_unit, major_unit, numeric_code, is_legacy, is_major, is_ndf, is_commodity) "
-            "VALUES ('{currency['ccy']}', {str(currency['is_per_usd']).lower()});"
-        )
+        query = f"""\
+INSERT INTO currency_table(
+    ccy,
+    name,
+    minor_unit,
+    numeric_code,
+    is_legacy,
+    is_major,
+    is_ndf,
+    is_commodity,
+    is_per_usd
+) VALUES (
+    {to_sql(currency['ccy'])},
+    {to_sql(currency['name'])},
+    {to_sql(currency['minor_unit'])},
+    {to_sql(currency['numeric_code'])},
+    {to_sql(currency['is_legacy'])},
+    {to_sql(currency['is_major'])},
+    {to_sql(currency['is_ndf'])},
+    {to_sql(currency['is_commodity'])},
+    {to_sql(currency['is_per_usd'])}
+);
+"""
+        response = await ksqldb.ksql(query)
         print(response)
+
+
+async def query(ksqldb: AsyncKsqlDbClient) -> None:
+    currency_query = "SELECT * FROM currency;"
+    async for currency in ksqldb.query(currency_query):
+        print(currency)
 
 
 async def main() -> None:
@@ -170,8 +223,9 @@ async def main() -> None:
 
     ksqldb = AsyncKsqlDbClient()
 
-    await setup(ksqldb)
-    await populate(ksqldb)
+    # await setup(ksqldb)
+    # await populate(ksqldb)
+    await query(ksqldb)
 
 
 if __name__ == "__main__":

@@ -10,7 +10,7 @@ This folder contains a docket compose file which starts:
 To start the stack.
 
 ```bash
-docker-compose up
+podman compose up
 ```
 
 Hitting ^C will stop the services, but leave the state intact.
@@ -19,7 +19,7 @@ To destroy the state.
 
 
 ```bash
-docker-compose up
+podman compose down
 ```
 
 ## CLI
@@ -27,5 +27,5 @@ docker-compose up
 To use the command line client.
 
 ```bash
-docker exec -it ksqldb-cli ksql http://ksqldb-server:8088
+podman exec -it ksqldb-cli ksql http://ksqldb-server:8088
 ```

@@ -27,7 +27,6 @@ class KsqlDbClient:
             api_key: str | None = None,
             api_secret: str | None = None
     ) -> None:
-        self._url = url
         auth = (
             BasicAuth(api_key, api_secret)
             if api_key and api_secret else
