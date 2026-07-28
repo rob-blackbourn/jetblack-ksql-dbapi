@@ -181,7 +181,7 @@ def to_sql(value: Any) -> str:
 
 
 async def populate(ksqldb: AsyncKsqlDbClient) -> None:
-    with open("examples/currencies.json", "r") as f:
+    with open("examples/pnl_data/currencies.json", "r") as f:
         currencies = cast(list[CurrencyDict], json.load(f))
 
     for currency in currencies:
