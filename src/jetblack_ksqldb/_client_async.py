@@ -176,7 +176,9 @@ class AsyncKsqlDbClient:
             properties: dict[str, Any] | None = None
     ) -> AsyncIterator[Any]:
         headers = {
-            "content-type": CONTENT_TYPE_NDJSON
+            # "accept": "application/vnd.ksql.v1+json",
+            # "accept": "application/vnd.ksql.v1",
+            "accept": "application/vnd.ksqlapi.delimited.v1",
         }
 
         body: dict[str, Any] = {
