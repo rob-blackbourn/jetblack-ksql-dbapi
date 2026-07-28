@@ -3,6 +3,15 @@ import asyncio
 from jetblack_ksqldb import AsyncKsqlDbClient
 
 
+async def drop_tables(ksqldb: AsyncKsqlDbClient) -> None:
+    response = await ksqldb.ksql(
+        """\
+DROP TABLE IF EXISTS user DELETE TOPIC;
+"""
+    )
+    print(response)
+
+
 async def create_tables(ksqldb: AsyncKsqlDbClient) -> None:
     response = await ksqldb.ksql(
         """\
@@ -56,10 +65,11 @@ async def main() -> None:
 
     ksqldb = AsyncKsqlDbClient()
 
-    # await create_tables(ksqldb)
-    # await insert_data(ksqldb)
+    await drop_tables(ksqldb)
+    await create_tables(ksqldb)
+    await insert_data(ksqldb)
     # await print_data(ksqldb)
-    await select_all(ksqldb)
+    # await select_all(ksqldb)
 
 
 if __name__ == "__main__":
