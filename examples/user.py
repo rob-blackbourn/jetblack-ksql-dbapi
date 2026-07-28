@@ -11,6 +11,13 @@ DROP TABLE IF EXISTS user DELETE TOPIC;
     )
     print(response)
 
+    response = await ksqldb.ksql(
+        """\
+DROP TABLE IF EXISTS user_view DELETE TOPIC;
+"""
+    )
+    print(response)
+
 
 async def create_tables(ksqldb: AsyncKsqlDbClient) -> None:
     response = await ksqldb.ksql(
@@ -29,6 +36,13 @@ CREATE TABLE user
     )
     print(response)
 
+    response = await ksqldb.ksql(
+        """\
+CREATE TABLE user_view AS SELECT * FROM user;
+"""
+    )
+    print(response)
+
 
 async def insert_data(ksqldb: AsyncKsqlDbClient) -> None:
 
@@ -43,18 +57,18 @@ INSERT INTO user(user_id, username) VALUES (3, 'harry');
 
 
 async def print_data(ksqldb: AsyncKsqlDbClient) -> None:
-    response = await ksqldb.ksql(
+    async for row in ksqldb.query_stream(
         """\
-PRINT user FROM BEGINNING;
+PRINT user_view FROM BEGINNING;
 """
-    )
-    print(response)
+    ):
+        print(row)
 
 
 async def select_all(ksqldb: AsyncKsqlDbClient) -> None:
-    async for row in ksqldb.query_stream(
+    async for row in ksqldb.query(
         """\
-SELECT * FROM user;
+SELECT * FROM user_view;
 """
     ):
         print(row)
@@ -65,11 +79,11 @@ async def main() -> None:
 
     ksqldb = AsyncKsqlDbClient()
 
-    await drop_tables(ksqldb)
-    await create_tables(ksqldb)
-    await insert_data(ksqldb)
+    # await drop_tables(ksqldb)
+    # await create_tables(ksqldb)
+    # await insert_data(ksqldb)
     # await print_data(ksqldb)
-    # await select_all(ksqldb)
+    await select_all(ksqldb)
 
 
 if __name__ == "__main__":
