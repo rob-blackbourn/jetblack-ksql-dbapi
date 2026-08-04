@@ -1,7 +1,7 @@
 """jetblack-ksqldb"""
 
 from ._client_async import AsyncKsqlDbClient
-from ._dbapi import Connection, Cursor, CursorDescription, connect, paramstyle
+from ._dbapi import Connection, Cursor, CursorDescription, connect
 from ._exceptions import (
     Warning,
     Error,
@@ -14,10 +14,12 @@ from ._exceptions import (
     ProgrammingError,
     NotSupportedError,
 )
+from ._paramstyles import ParamStyle
 
 # DBAPI compliance
 apilevel = "2.0"
 threadsafety = 2
+paramstyle: ParamStyle = "pyformat"
 
 __all__ = [
     # client

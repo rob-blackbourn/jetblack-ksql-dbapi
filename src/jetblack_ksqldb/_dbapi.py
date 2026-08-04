@@ -24,8 +24,6 @@ from ._types import QueryMetaData, create_ksql_error
 CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_NDJSON = "application/vnd.ksqlapi.delimited.v1"
 
-paramstyle: ParamStyle = "pyformat"
-
 
 class CursorDescription(NamedTuple):
     name: str
@@ -126,12 +124,12 @@ class Cursor:
             query: str,
             params: Sequence[Any] | Mapping[str, Any] | None = None
     ) -> None:
-        global paramstyle
+        import jetblack_ksqldb
         if params:
             bound_query = bind_parameters(
                 query,
                 params,
-                paramstyle,
+                jetblack_ksqldb.paramstyle,
                 self._binding_config
             )
         else:
@@ -147,6 +145,32 @@ class Cursor:
                 self._execute_select(bound_query)
             case StatmentType.PRINT:
                 self._execute_print(bound_query)
+
+    def executemany(
+            self,
+            query: str,
+            params: Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]
+    ) -> None:
+        if len(params) == 0:
+            raise ValueError("Must have params")
+
+        import jetblack_ksqldb
+        bound_queries = [
+            bind_parameters(
+                query,
+                args,
+                jetblack_ksqldb.paramstyle,
+                self._binding_config
+            )
+            for args in params
+        ]
+
+        statement_type = self._inspector.find_statement_type(bound_queries[0])
+        if statement_type != StatmentType.COMMAND:
+            raise ValueError("Expected a command")
+
+        ksql = "".join(bound_queries)
+        self._execute_command(ksql)
 
     def _execute_command(
             self,
