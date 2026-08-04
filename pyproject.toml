@@ -5,7 +5,8 @@ description = "An asyncio client for ksqldb"
 authors = [{name = "Rob Blackbourn", email = "rob.blackbourn@gmail.com"}]
 readme = "README.md"
 dependencies = [
-    "httpx[http2]<1,>=0.28.1"
+    "httpx[http2]<1,>=0.28.1",
+    "lark<2,>=1",
 ]
 
 [project.optional-dependencies]

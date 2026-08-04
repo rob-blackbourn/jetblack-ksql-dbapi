@@ -12,7 +12,7 @@ from httpx import (
     BasicAuth
 )
 
-from .types import QueryMetaData, create_ksql_error
+from ._types import QueryMetaData, create_ksql_error
 
 CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_NDJSON = "application/vnd.ksqlapi.delimited.v1"

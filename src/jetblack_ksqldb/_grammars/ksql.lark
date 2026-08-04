@@ -1,0 +1,484 @@
+statements : (single_statement)*
+
+test_statement : (single_statement | assert_statement ";" | run_script ";")
+
+?single_statement : statement ";"
+
+?statement : query_statement
+           | command_statement
+
+query_statement : query
+                | print
+
+command_statement : show_statement
+                  | describe_statement
+                  | create_statement
+                  | drop_statement
+                  | flow_statement
+                  | type_statement
+                  | insert_statement
+                  | variable_statement
+                  | property_statement
+                  | alter_statement
+                  | debug_statement
+
+assert_statement : ASSERT VALUES source_name (columns)? VALUES values                     # assert_values
+                 | ASSERT NULL VALUES source_name (columns)? KEY values                   # assert_tombstone
+                 | ASSERT STREAM source_name (table_elements)? (WITH table_properties)?   # assert_stream
+                 | ASSERT TABLE source_name (table_elements)? (WITH table_properties)?    # assert_table
+
+run_script : RUN SCRIPT STRING
+
+resource_name : identifier
+              | STRING
+
+variable_statement : DEFINE variable_name EQ variable_value  # define_variable
+                   | UNDEFINE variable_name                  # undefine_variable
+
+property_statement : SET STRING EQ STRING                    # set_property
+                   | ALTER SYSTEM STRING EQ STRING           # alter_system_property
+                   | UNSET STRING                            # unset_property
+
+print : PRINT resource_name print_clause
+
+debug_statement : EXPLAIN  (statement | identifier)                                             # explain
+                | ASSERT (NOT EXISTS)? TOPIC resource_name (WITH table_properties)? timeout?    # assert_topic
+                | ASSERT (NOT EXISTS)? SCHEMA (SUBJECT resource_name)? (ID literal)? timeout?   # assert_schema
+
+flow_statement : TERMINATE identifier                                                                                          # terminate_query
+               | TERMINATE ALL                                                                                                 # terminate_query
+               | PAUSE identifier                                                                                              # pause_query
+               | PAUSE ALL                                                                                                     # pause_query
+               | RESUME identifier                                                                                             # resume_query
+               | RESUME ALL                                                                                                    # resume_query
+
+show_statement : (LIST | SHOW) PROPERTIES                   # list_properties
+               | (LIST | SHOW) ALL? TOPICS EXTENDED?        # list_topics
+               | (LIST | SHOW) STREAMS EXTENDED?            # list_streams
+               | (LIST | SHOW) TABLES EXTENDED?             # list_tables
+               | (LIST | SHOW) FUNCTIONS                    # list_functions
+               | (LIST | SHOW) (SOURCE | SINK)? CONNECTORS  # list_connectors
+               | (LIST | SHOW) CONNECTOR PLUGINS            # list_connector_plugins
+               | (LIST | SHOW) TYPES                        # list_types
+               | (LIST | SHOW) VARIABLES                    # list_variables
+               | (LIST | SHOW) QUERIES EXTENDED?            # list_queries
+
+describe_statement : DESCRIBE source_name EXTENDED?         # describe_stream
+                   | DESCRIBE STREAMS EXTENDED?             # describe_streams
+                   | DESCRIBE FUNCTION identifier           # describe_function
+                   | DESCRIBE CONNECTOR identifier          # describe_connector
+
+type_statement : CREATE TYPE (IF NOT EXISTS)? identifier AS type                                                               # register_type
+               | DROP TYPE (IF EXISTS)? identifier                                                                             # drop_type
+
+create_statement : CREATE (OR REPLACE)? (SOURCE)? STREAM (IF NOT EXISTS)? source_name (table_elements)? (WITH table_properties)? # create_stream
+                 | CREATE (OR REPLACE)? STREAM (IF NOT EXISTS)? source_name (WITH table_properties)? AS query                    # create_stream_as
+                 | CREATE (OR REPLACE)? (SOURCE)? TABLE (IF NOT EXISTS)? source_name (table_elements)? (WITH table_properties)?  # create_table
+                 | CREATE (OR REPLACE)? TABLE (IF NOT EXISTS)? source_name (WITH table_properties)? AS query                     # create_table_as
+                 | CREATE (SINK | SOURCE) CONNECTOR (IF NOT EXISTS)? identifier WITH table_properties                            # create_connector
+
+drop_statement : DROP STREAM (IF EXISTS)? source_name (DELETE TOPIC)?  -> drop_stream
+               | DROP TABLE (IF EXISTS)? source_name (DELETE TOPIC)?   -> drop_table
+               | DROP CONNECTOR (IF EXISTS)? identifier                -> drop_connector
+
+alter_statement : ALTER (STREAM | TABLE) source_name alter_option ("," alter_option)*                                           # alter_source
+
+insert_statement : INSERT INTO source_name (WITH table_properties)? query  -> insert_into
+                 | INSERT INTO source_name (columns)? VALUES values        -> insert_values
+
+query : SELECT select_item ("," select_item)* FROM relation (WINDOW  window_expression)? (WHERE boolean_expression)? (GROUP BY group_by)? (PARTITION BY partition_by)? (HAVING boolean_expression)? (EMIT result_materialization)? limit_clause?
+
+result_materialization : CHANGES
+                       | FINAL
+
+timeout : TIMEOUT number window_unit
+
+alter_option : ADD (COLUMN)? identifier type
+
+table_elements : "(" table_element ("," table_element)* ")"
+
+table_element : identifier type column_constraints?
+
+column_constraints : ((PRIMARY)? KEY)
+                   | HEADERS
+                   | HEADER "(" STRING ")"
+
+table_properties : "(" table_property ("," table_property)* ")"
+
+table_property : (identifier | STRING) EQ literal
+
+print_clause : (FROM BEGINNING)? interval_clause? limit_clause?
+
+interval_clause : (INTERVAL | SAMPLE) number
+
+limit_clause : LIMIT number
+
+retention_clause : RETENTION number window_unit
+
+grace_period_clause : GRACE PERIOD number window_unit
+
+window_expression : (IDENTIFIER)? ( tumbling_window_expression | hopping_window_expression | session_window_expression )
+
+tumbling_window_expression : TUMBLING "(" SIZE number window_unit ("," retention_clause)? ("," grace_period_clause)? ")"
+
+hopping_window_expression : HOPPING "(" SIZE number window_unit "," ADVANCE BY number window_unit ("," retention_clause)? ("," grace_period_clause)? ")"
+
+session_window_expression : SESSION "(" number window_unit ("," retention_clause)? ("," grace_period_clause)? ")"
+
+window_unit  : DAY
+             | HOUR
+             | MINUTE
+             | SECOND
+             | MILLISECOND
+             | DAYS
+             | HOURS
+             | MINUTES
+             | SECONDS
+             | MILLISECONDS
+
+group_by     : value_expression ("," value_expression)*
+             | "(" (value_expression ("," value_expression)*)? ")"
+
+partition_by : value_expression ("," value_expression)*
+             | "(" (value_expression ("," value_expression)*)? ")"
+
+values       : "(" (value_expression ("," value_expression)*)? ")"
+
+select_item  : expression (AS? identifier)?                   # select_single
+             | primary_expression STRUCT_FIELD_REF ASTERISK   # select_struct_all
+             | identifier "." ASTERISK                        # select_all
+             | ASTERISK                                       # select_all
+
+relation : aliased_relation joined_source+  # join_relation
+         | aliased_relation                 # relation_default
+
+joined_source : join_type JOIN aliased_relation join_window? join_criteria
+
+join_type : INNER?       # inner_join
+          | FULL OUTER?  # outer_join
+          | LEFT OUTER?  # left_join
+          | RIGHT OUTER? # right_join
+
+join_window : WITHIN within_expression
+
+within_expression : "(" join_window_size "," join_window_size ")" (grace_period_clause)?  # join_window_with_before_and_after
+                  | join_window_size (grace_period_clause)?                               # single_join_window
+
+join_window_size : number window_unit
+
+join_criteria : ON boolean_expression
+
+aliased_relation : relation_primary (AS? source_name)?
+
+columns : "(" identifier ("," identifier)* ")"
+
+relation_primary : source_name # table_name
+
+expression : boolean_expression
+
+boolean_expression : predicated                                 # boolean_default
+                   | NOT boolean_expression                     # logical_not
+                   | boolean_expression AND boolean_expression  # logical_binary
+                   | boolean_expression OR boolean_expression   # logical_binary
+
+predicated : value_expression predicate?
+
+predicate : comparison_operator value_expression                # comparison
+          | NOT? BETWEEN value_expression AND value_expression  # between
+          | NOT? IN "(" expression ("," expression)* ")"        # in_list
+          | NOT? LIKE value_expression (ESCAPE STRING)?   		# like
+          | IS NOT? NULL                                        # null_predicate
+          | IS NOT? DISTINCT FROM value_expression              # distinct_from
+
+value_expression : primary_expression                                              # value_expression_default
+                 | value_expression AT time_zone_specifier                         # at_time_zone
+                 | (MINUS | PLUS) value_expression                                 # arithmetic_unary
+                 | value_expression (ASTERISK | SLASH | PERCENT) value_expression  # arithmetic_binary
+                 | value_expression (PLUS | MINUS) value_expression                # arithmetic_binary
+                 | value_expression CONCAT value_expression                        # concatenation
+
+primary_expression : literal                                                                                 # literal_expression
+                   | identifier STRING                                                                       # type_constructor
+                   | CASE value_expression when_clause+ (ELSE expression)? END                               # simple_case
+                   | CASE when_clause+ (ELSE expression)? END                                                # searched_case
+                   | CAST "(" expression AS type ")"                                                         # cast
+                   | ARRAY "[" (expression ("," expression)*)? "]"                                           # array_constructor
+                   | MAP "(" (expression ASSIGN expression ("," expression ASSIGN expression)*)? ")"         # map_constructor
+                   | STRUCT "(" (identifier ASSIGN expression ("," identifier ASSIGN expression)*)? ")"      # struct_constructor
+                   | identifier "(" ASTERISK ")"                              		                         # function_call
+                   | identifier "(" (function_argument ("," function_argument)* ("," lambda_function)*)? ")" # function_call
+                   | primary_expression "[" value_expression "]"                                             # subscript
+                   | identifier                                                                              # column_reference
+                   | identifier "." identifier                                                               # qualified_column_reference
+                   | primary_expression STRUCT_FIELD_REF identifier                                          # dereference
+                   | "(" expression ")"                                                                      # parenthesized_expression
+
+function_argument : expression
+                  | window_unit
+
+when_clause : WHEN expression THEN expression
+
+lambda_function :  identifier "=>" expression                            # lambda
+                | "(" identifier ("," identifier)*  ")" "=>" expression  # lambda
+
+time_zone_specifier : TIME ZONE STRING    -> time_zone_string
+
+comparison_operator : EQ | NEQ | LT | LTE | GT | GTE
+
+type : type ARRAY
+     | ARRAY "<" type ">"
+     | MAP "<" type "," type ">"
+     | STRUCT "<" (identifier type ("," identifier type)*)? ">"
+     | DECIMAL "(" number "," number ")"
+     | base_type ("(" type_parameter ("," type_parameter)* ")")?
+
+type_parameter: UINT_VALUE | "STRING"
+
+?base_type : identifier
+
+variable_name  : IDENTIFIER
+variable_value : STRING
+
+source_name : identifier
+
+identifier : VARIABLE               # -> variable_identifier
+           | IDENTIFIER             # -> unquoted_identifier
+           | QUOTED_IDENTIFIER      # -> quoted_identifier_alternative
+           | non_reserved           # -> unquoted_identifier
+           | BACKQUOTED_IDENTIFIER  # -> backquoted_identifier
+           | DIGIT_IDENTIFIER       # -> digit_identifier
+
+literal : NULL          -> null_literal
+        | number        -> numeric_literal
+        | boolean_value -> boolean_literal
+        | STRING        -> string_literal
+        | VARIABLE      -> variable_literal
+
+number : DECIMAL_VALUE  -> decimal_literal
+       | FLOAT_VALUE    -> float_literal
+       | INT_VALUE      -> integer_literal
+
+boolean_value : TRUE
+              | FALSE
+
+non_reserved : SHOW | TABLES | COLUMNS | COLUMN | PARTITIONS | FUNCTIONS | FUNCTION | SESSION
+             | STRUCT | MAP | ARRAY | PARTITION
+             | INTEGER | DATE | TIME | TIMESTAMP | INTERVAL | ZONE | "STRING"
+             | YEAR | MONTH | DAY | HOUR | MINUTE | SECOND
+             | EXPLAIN | ANALYZE | TYPE | TYPES
+             | SET | RESET
+             | IF
+             | SOURCE | SINK
+             | PRIMARY | KEY
+             | EMIT
+             | CHANGES
+             | FINAL
+             | ESCAPE
+             | REPLACE
+             | ASSERT
+             | ALTER
+             | ADD
+             | HEADER | HEADERS
+             | GRACE | PERIOD
+             | DEFINE | UNDEFINE | VARIABLES
+             | PLUGINS | SYSTEM
+             | TIMEOUT | SCHEMA | SUBJECT | ID
+
+EMIT         : "EMIT"i
+CHANGES      : "CHANGES"i
+FINAL        : "FINAL"i
+SELECT       : "SELECT"i
+FROM         : "FROM"i
+AS           : "AS"i
+ALL          : "ALL"i
+DISTINCT     : "DISTINCT"i
+WHERE        : "WHERE"i
+WITHIN       : "WITHIN"i
+WINDOW       : "WINDOW"i
+GROUP        : "GROUP"i
+BY           : "BY"i
+HAVING       : "HAVING"i
+LIMIT        : "LIMIT"i
+AT           : "AT"i
+OR           : "OR"i
+AND          : "AND"i
+IN           : "IN"i
+NOT          : "NOT"i
+EXISTS       : "EXISTS"i
+BETWEEN      : "BETWEEN"i
+LIKE         : "LIKE"i
+ESCAPE       : "ESCAPE"i
+IS           : "IS"i
+NULL         : "NULL"i
+TRUE         : "TRUE"i
+FALSE        : "FALSE"i
+INTEGER      : "INTEGER"i
+DATE         : "DATE"i
+TIME         : "TIME"i
+TIMESTAMP    : "TIMESTAMP"i
+INTERVAL     : "INTERVAL"i
+YEAR         : "YEAR"i
+MONTH        : "MONTH"i
+DAY          : "DAY"i
+HOUR         : "HOUR"i
+MINUTE       : "MINUTE"i
+SECOND       : "SECOND"i
+MILLISECOND  : "MILLISECOND"i
+YEARS        : "YEARS"i
+MONTHS       : "MONTHS"i
+DAYS         : "DAYS"i
+HOURS        : "HOURS"i
+MINUTES      : "MINUTES"i
+SECONDS      : "SECONDS"i
+MILLISECONDS : "MILLISECONDS"i
+ZONE         : "ZONE"i
+TUMBLING     : "TUMBLING"i
+HOPPING      : "HOPPING"i
+SIZE         : "SIZE"i
+ADVANCE      : "ADVANCE"i
+RETENTION    : "RETENTION"i
+GRACE        : "GRACE"i
+PERIOD       : "PERIOD"i
+CASE         : "CASE"i
+WHEN         : "WHEN"i
+THEN         : "THEN"i
+ELSE         : "ELSE"i
+END          : "END"i
+JOIN         : "JOIN"i
+FULL         : "FULL"i
+OUTER        : "OUTER"i
+INNER        : "INNER"i
+LEFT         : "LEFT"i
+RIGHT        : "RIGHT"i
+ON           : "ON"i
+PARTITION    : "PARTITION"i
+STRUCT       : "STRUCT"i
+WITH         : "WITH"i
+VALUES       : "VALUES"i
+CREATE       : "CREATE"i
+TABLE        : "TABLE"i
+TOPIC        : "TOPIC"i
+STREAM       : "STREAM"i
+STREAMS      : "STREAMS"i
+INSERT       : "INSERT"i
+DELETE       : "DELETE"i
+INTO         : "INTO"i
+DESCRIBE     : "DESCRIBE"i
+EXTENDED     : "EXTENDED"i
+PRINT        : "PRINT"i
+EXPLAIN      : "EXPLAIN"i
+ANALYZE      : "ANALYZE"i
+TYPE         : "TYPE"i
+TYPES        : "TYPES"i
+CAST         : "CAST"i
+SHOW         : "SHOW"i
+LIST         : "LIST"i
+TABLES       : "TABLES"i
+TOPICS       : "TOPICS"i
+QUERY        : "QUERY"i
+QUERIES      : "QUERIES"i
+TERMINATE    : "TERMINATE"i
+PAUSE        : "PAUSE"i
+RESUME       : "RESUME"i
+LOAD         : "LOAD"i
+COLUMNS      : "COLUMNS"i
+COLUMN       : "COLUMN"i
+PARTITIONS   : "PARTITIONS"i
+FUNCTIONS    : "FUNCTIONS"i
+FUNCTION     : "FUNCTION"i
+DROP         : "DROP"i
+TO           : "TO"i
+RENAME       : "RENAME"i
+ARRAY        : "ARRAY"i
+MAP          : "MAP"i
+SET          : "SET"i
+DEFINE       : "DEFINE"i
+UNDEFINE     : "UNDEFINE"i
+RESET        : "RESET"i
+SESSION      : "SESSION"i
+SAMPLE       : "SAMPLE"i
+EXPORT       : "EXPORT"i
+CATALOG      : "CATALOG"i
+PROPERTIES   : "PROPERTIES"i
+BEGINNING    : "BEGINNING"i
+UNSET        : "UNSET"i
+RUN          : "RUN"i
+SCRIPT       : "SCRIPT"i
+DECIMAL      : "DECIMAL"i
+KEY          : "KEY"i
+CONNECTOR    : "CONNECTOR"i
+CONNECTORS   : "CONNECTORS"i
+SINK         : "SINK"i
+SOURCE       : "SOURCE"i
+NAMESPACE    : "NAMESPACE"i
+MATERIALIZED : "MATERIALIZED"i
+VIEW         : "VIEW"i
+PRIMARY      : "PRIMARY"i
+REPLACE      : "REPLACE"i
+ASSERT       : "ASSERT"i
+ADD          : "ADD"i
+ALTER        : "ALTER"i
+VARIABLES    : "VARIABLES"i
+PLUGINS      : "PLUGINS"i
+HEADERS      : "HEADERS"i
+HEADER       : "HEADER"i
+SYSTEM       : "SYSTEM"i
+TIMEOUT      : "TIMEOUT"i
+SCHEMA       : "SCHEMA"i
+SUBJECT      : "SUBJECT"i
+ID           : "ID"i
+
+IF : "IF"i
+
+EQ  : "="
+NEQ : "<>" | "!="
+LT  : "<"
+LTE : "<="
+GT  : ">"
+GTE : ">="
+
+PLUS     : "+"
+MINUS    : "-"
+ASTERISK : "*"
+SLASH    : "/"
+PERCENT  : "%"
+CONCAT   : "||"
+
+ASSIGN: ":="
+STRUCT_FIELD_REF: "->"
+
+LAMBDA_EXPRESSION: "=>"
+
+VARIABLE: "${" IDENTIFIER "}"
+
+DIGIT_IDENTIFIER: /[0-9][a-zA-Z0-9_@]+/
+
+QUOTED_IDENTIFIER: /"([^"]|"")*"/
+
+BACKQUOTED_IDENTIFIER: /`([^`]|``)*`/
+
+IDENTIFIER: /[_a-zA-Z][a-zA-Z0-9_@]*/
+
+DECIMAL_VALUE  : MINUS? UDECIMAL_VALUE
+UDECIMAL_VALUE : DIGIT+ "." DIGIT*
+               | "." DIGIT+
+
+FLOAT_VALUE  : MINUS? UFLOAT_VALUE
+UFLOAT_VALUE : DIGIT+ ("." DIGIT*)? EXPONENT
+             | "." DIGIT+ EXPONENT
+
+INT_VALUE  : MINUS? UINT_VALUE
+UINT_VALUE : DIGIT+
+
+EXPONENT : "E"i [PLUS | MINUS]? DIGIT+
+DIGIT: "0".."9"
+
+STRING : /\'(\\.|\'\'|[^'\n])*\'/
+
+WS: /[ \t\n\f\r]+/
+DIRECTIVE_COMMENT: /--[^\n]*/
+BRACKETED_COMMENT: /\/\*(\*(?!\/)|[^*])*\*\//
+
+%ignore WS
+%ignore DIRECTIVE_COMMENT
+%ignore BRACKETED_COMMENT
