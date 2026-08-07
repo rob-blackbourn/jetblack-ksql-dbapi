@@ -18,17 +18,17 @@ import httpx
 from httpx import (
     Client,
     HTTPStatusError,
-    Response,
     Timeout,
     USE_CLIENT_DEFAULT,
     BasicAuth
 )
 
+from .._types import QueryMetaData, create_ksql_error
+
 from ._binding import BindingConfig, bind_parameters
 from ._ksql_inspector import KsqlInspector
 from ._paramstyles import ParamStyle
 from ._statement_transformer import StatementStyle, StatementType
-from ._types import QueryMetaData, create_ksql_error
 
 
 type QueryType = Literal['print', 'select']

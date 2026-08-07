@@ -2,12 +2,11 @@ from base64 import b64encode
 from collections.abc import Callable, Sequence
 from datetime import date, datetime
 from decimal import Decimal
-import re
 from typing import Any, Mapping, NamedTuple, cast
 
 from ._exceptions import ProgrammingError
 from ._paramstyles import ParamStyle, convert
-from ._utils import classname
+from .._utils import classname
 
 
 class BindingConfig(NamedTuple):

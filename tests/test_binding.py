@@ -1,6 +1,6 @@
 from datetime import date, datetime
 
-from jetblack_ksqldb._binding import (
+from jetblack_ksqldb.dbapi._binding import (
     escape_parameter_sequence,
     escape_parameter_dict,
 )

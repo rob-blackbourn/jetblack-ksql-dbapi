@@ -1,4 +1,9 @@
-from jetblack_ksqldb._paramstyles import convert, Parameters, ParamStyle, PARAMSTYLES
+from jetblack_ksqldb.dbapi._paramstyles import (
+    convert,
+    Parameters,
+    ParamStyle,
+    PARAMSTYLES
+)
 
 
 def test_convert_to_and_from() -> None:

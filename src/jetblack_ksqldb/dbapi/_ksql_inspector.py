@@ -2,7 +2,7 @@ from importlib import resources as impresources
 
 from lark import Lark
 
-from . import _grammars
+from .. import _grammars
 from ._statement_transformer import (
     KsqlStatementTransformer,
     StatementStyle,
