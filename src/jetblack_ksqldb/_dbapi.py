@@ -145,7 +145,7 @@ class Cursor:
 
         match statement_type:
 
-            case StatmentType.COMMAND:
+            case StatmentType.COMMAND, StatmentType.SHOW_TABLES:
                 self._ksql(bound_query)
             case StatmentType.SELECT:
                 self._query_stream(bound_query, 'select')

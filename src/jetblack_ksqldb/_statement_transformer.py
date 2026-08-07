@@ -8,6 +8,7 @@ class StatmentType(Enum):
     SELECT = auto()
     PRINT = auto()
     COMMAND = auto()
+    SHOW_TABLES = auto()
 
 
 class KsqlStatementTransformer(Transformer):
@@ -19,7 +20,13 @@ class KsqlStatementTransformer(Transformer):
         return StatmentType.PRINT
 
     def command_statement(self, items: Sequence[Any]) -> StatmentType:
+        if len(items) == 1 and isinstance(items[0], StatmentType):
+            return items[0]
+
         return StatmentType.COMMAND
+
+    def show_tables(self, items: Sequence[Any]) -> StatmentType:
+        return StatmentType.SHOW_TABLES
 
     def query_statement(self, items: Sequence[Any]) -> StatmentType:
         assert len(items) == 1, isinstance(items[0], StatmentType)

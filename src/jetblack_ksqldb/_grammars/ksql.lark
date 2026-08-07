@@ -55,7 +55,7 @@ flow_statement : TERMINATE identifier                                           
 show_statement : (LIST | SHOW) PROPERTIES                   # list_properties
                | (LIST | SHOW) ALL? TOPICS EXTENDED?        # list_topics
                | (LIST | SHOW) STREAMS EXTENDED?            # list_streams
-               | (LIST | SHOW) TABLES EXTENDED?             # list_tables
+               | (LIST | SHOW) TABLES EXTENDED?             -> show_tables
                | (LIST | SHOW) FUNCTIONS                    # list_functions
                | (LIST | SHOW) (SOURCE | SINK)? CONNECTORS  # list_connectors
                | (LIST | SHOW) CONNECTOR PLUGINS            # list_connector_plugins
