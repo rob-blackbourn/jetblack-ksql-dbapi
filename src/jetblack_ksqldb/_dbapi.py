@@ -3,7 +3,16 @@ from __future__ import annotations
 from importlib import resources as impresources
 import json
 import re
-from typing import Any, Iterator, Mapping, NamedTuple, Self, Sequence, cast
+from typing import (
+    Any,
+    Iterator,
+    Literal,
+    Mapping,
+    NamedTuple,
+    Self,
+    Sequence,
+    cast
+)
 
 import httpx
 from httpx import (
@@ -21,8 +30,11 @@ from ._paramstyles import ParamStyle
 from ._statement_transformer import StatmentType
 from ._types import QueryMetaData, create_ksql_error
 
+
+type QueryType = Literal['print', 'select']
+
 CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
-CONTENT_TYPE_NDJSON = "application/vnd.ksqlapi.delimited.v1"
+CONTENT_TYPE_DELIMITED = "application/vnd.ksqlapi.delimited.v1"
 
 
 class CursorDescription(NamedTuple):
@@ -94,17 +106,6 @@ class Connection:
         return Cursor(self._client, self._binding_config, self._inspector)
 
 
-_SQL_COMMENTS = re.compile(
-    r'(([\'"])(?:(?!\2|\\).|\\.)*\2)|--.*|/\*(?:[^*]|\*(?!/))*\*/'
-)
-
-
-def clean_query(query: str) -> str:
-    query = re.sub(_SQL_COMMENTS, "", query)
-    query = re.sub(r'\s+', " ", query)
-    return query
-
-
 class Cursor:
 
     def __init__(
@@ -118,6 +119,11 @@ class Cursor:
         self._inspector = inspector
         self._result: Iterator | None
         self._iter: Iterator[str] | None = None
+        self._description: list[CursorDescription] | None = None
+
+    @property
+    def description(self) -> list[CursorDescription] | None:
+        return self._description
 
     def execute(
             self,
@@ -140,11 +146,11 @@ class Cursor:
         match statement_type:
 
             case StatmentType.COMMAND:
-                self._execute_command(bound_query)
+                self._ksql(bound_query)
             case StatmentType.SELECT:
-                self._execute_select(bound_query)
+                self._query_stream(bound_query, 'select')
             case StatmentType.PRINT:
-                self._execute_print(bound_query)
+                self._query_stream(bound_query, 'print')
 
     def executemany(
             self,
@@ -170,9 +176,9 @@ class Cursor:
             raise ValueError("Expected a command")
 
         ksql = "".join(bound_queries)
-        self._execute_command(ksql)
+        self._ksql(ksql)
 
-    def _execute_command(
+    def _ksql(
             self,
             ksql: str,
             *,
@@ -213,15 +219,20 @@ class Cursor:
             response=response
         )
 
-    def _execute_select(
+    def _query_stream(
             self,
             sql: str,
+            query_type: QueryType,
             *,
             timeout: float = 1.0,
             properties: dict[str, Any] | None = None
     ) -> None:
         headers = {
-            "content-type": CONTENT_TYPE_JSON
+            "content-type": (
+                CONTENT_TYPE_JSON
+                if query_type == 'select' else
+                CONTENT_TYPE_DELIMITED
+            )
         }
 
         body: dict[str, Any] = {
@@ -242,26 +253,26 @@ class Cursor:
         )
 
         response.raise_for_status()
-        self._iter = response.iter_lines()
-        meta_data = cast(QueryMetaData, json.loads(next(self._iter)))
-        self._columns = CursorDescription.create_all(meta_data)
-
-    def _to_row(self, line: str) -> Sequence[Any]:
-        data = json.loads(line)
-        assert isinstance(data, Sequence)
-        return data
+        if query_type == 'select':
+            self._iter = map(json.loads, response.iter_lines())
+            meta_data = cast(QueryMetaData, next(self._iter))
+            self._description = CursorDescription.create_all(meta_data)
+        else:
+            self._iter = response.iter_lines()
+            self._description = None
 
     def fetchone(self) -> Sequence[Any]:
         assert self._iter is not None
-        line = next(self._iter)
-        return self._to_row(line)
+        row = next(self._iter)
+        return row
 
     def fetchall(self) -> Sequence[Sequence[Any]]:
         assert self._iter is not None
-        return [
-            self._to_row(line)
-            for line in self._iter
-        ]
+        return list(self._iter)
+
+    def __iter__(self) -> Iterator[Sequence[Any]]:
+        assert self._iter is not None
+        return self._iter
 
     def _execute_print(
             self,

@@ -81,9 +81,9 @@ async def main() -> None:
 
     ksqldb = AsyncKsqlDbClient()
 
-    # await drop_tables(ksqldb)
-    # await create_tables(ksqldb)
-    # await insert_data(ksqldb)
+    await drop_tables(ksqldb)
+    await create_tables(ksqldb)
+    await insert_data(ksqldb)
     await print_data(ksqldb)
     # await select_all(ksqldb)
 

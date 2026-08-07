@@ -72,7 +72,7 @@ PRINT user FROM BEGINNING;
 """
     )
 
-    for row in cur.fetchall():
+    for row in cur:
         print(row)
 
 
@@ -95,11 +95,14 @@ def main() -> None:
     ksql.paramstyle = 'qmark'
     conn = ksql.connect()
 
-    drop_tables(conn)
-    create_tables(conn)
-    insert_data(conn)
-    # print_data(conn)
-    select_all(conn)
+    # drop_tables(conn)
+    # create_tables(conn)
+    # insert_data(conn)
+    print_data(conn)
+    # select_all(conn)
+
+    # cur = conn.cursor()
+    # cur.execute("DESCRIBE user;")
 
 
 if __name__ == "__main__":
