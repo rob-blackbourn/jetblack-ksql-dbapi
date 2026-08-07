@@ -99,7 +99,7 @@ def main() -> None:
     create_tables(conn)
     insert_data(conn)
     # print_data(conn)
-    # select_all(conn)
+    select_all(conn)
 
     # cur = conn.cursor()
     # cur.execute("DESCRIBE user;")
