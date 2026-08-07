@@ -1,37 +1,57 @@
 from enum import Enum, auto
-from typing import Any, Sequence
+from typing import Any, Sequence, TypeGuard
 
-from lark import Transformer, Token
+from lark import Transformer
 
 
-class StatmentType(Enum):
+class StatementStyle(Enum):
+    QUERY = auto()
+    COMMAND = auto()
+
+
+class StatementType(Enum):
+    UNSPECIFIED = auto()
     SELECT = auto()
     PRINT = auto()
-    COMMAND = auto()
     SHOW_TABLES = auto()
+
+
+def is_statement_tuple(value: Any) -> TypeGuard[tuple[StatementStyle, StatementType]]:
+    return (
+        isinstance(value, tuple)
+        and len(value) == 2
+        and isinstance(value[0], StatementStyle)
+        and isinstance(value[1], StatementType)
+    )
 
 
 class KsqlStatementTransformer(Transformer):
 
-    def query(self, items: Sequence[Any]) -> StatmentType:
-        return StatmentType.SELECT
+    def query(self, items: Sequence[Any]) -> StatementType:
+        return StatementType.SELECT
 
-    def print(self, items: Sequence[Any]) -> StatmentType:
-        return StatmentType.PRINT
+    def print(self, items: Sequence[Any]) -> StatementType:
+        return StatementType.PRINT
 
-    def command_statement(self, items: Sequence[Any]) -> StatmentType:
-        if len(items) == 1 and isinstance(items[0], StatmentType):
-            return items[0]
+    def command_statement(self, items: Sequence[Any]) -> tuple[StatementStyle, StatementType]:
+        if len(items) == 1 and isinstance(items[0], StatementType):
+            statement_type = items[0]
+        else:
+            statement_type = StatementType.UNSPECIFIED
 
-        return StatmentType.COMMAND
+        return StatementStyle.COMMAND, statement_type
 
-    def show_tables(self, items: Sequence[Any]) -> StatmentType:
-        return StatmentType.SHOW_TABLES
+    def show_tables(self, items: Sequence[Any]) -> StatementType:
+        return StatementType.SHOW_TABLES
 
-    def query_statement(self, items: Sequence[Any]) -> StatmentType:
-        assert len(items) == 1, isinstance(items[0], StatmentType)
-        return items[0]
+    def query_statement(self, items: Sequence[Any]) -> tuple[StatementStyle, StatementType]:
+        if len(items) == 1 and isinstance(items[0], StatementType):
+            statement_type = items[0]
+        else:
+            statement_type = StatementType.UNSPECIFIED
 
-    def statements(self, items: Sequence[Any]) -> Sequence[StatmentType]:
-        assert all(isinstance(item, StatmentType) for item in items)
+        return StatementStyle.QUERY, statement_type
+
+    def statements(self, items: Sequence[Any]) -> Sequence[tuple[StatementStyle, StatementType]]:
+        assert all(is_statement_tuple(item) for item in items)
         return items

@@ -27,7 +27,7 @@ from httpx import (
 from ._binding import BindingConfig, bind_parameters
 from ._ksql_inspector import KsqlInspector
 from ._paramstyles import ParamStyle
-from ._statement_transformer import StatmentType
+from ._statement_transformer import StatementStyle, StatementType
 from ._types import QueryMetaData, create_ksql_error
 
 
@@ -141,15 +141,15 @@ class Cursor:
         else:
             bound_query = query
 
-        statement_type = self._inspector.find_statement_type(bound_query)
+        statement_tuple = self._inspector.find_statement_type(bound_query)
 
-        match statement_type:
+        match statement_tuple:
 
-            case StatmentType.COMMAND, StatmentType.SHOW_TABLES:
+            case (StatementStyle.COMMAND, _):
                 self._ksql(bound_query)
-            case StatmentType.SELECT:
+            case (StatementStyle.QUERY, StatementType.SELECT):
                 self._query_stream(bound_query, 'select')
-            case StatmentType.PRINT:
+            case (StatementStyle.QUERY, StatementType.PRINT):
                 self._query_stream(bound_query, 'print')
 
     def executemany(
@@ -172,7 +172,7 @@ class Cursor:
         ]
 
         statement_type = self._inspector.find_statement_type(bound_queries[0])
-        if statement_type != StatmentType.COMMAND:
+        if statement_type != StatementStyle.COMMAND:
             raise ValueError("Expected a command")
 
         ksql = "".join(bound_queries)
