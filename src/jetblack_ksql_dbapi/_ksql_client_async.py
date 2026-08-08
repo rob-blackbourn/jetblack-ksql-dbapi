@@ -3,14 +3,24 @@
 import json
 from typing import Any, AsyncIterator, Mapping, cast
 
-import httpx
-from httpx import (
-    AsyncClient,
-    HTTPStatusError,
-    Timeout,
-    USE_CLIENT_DEFAULT,
-    BasicAuth
-)
+try:
+    import httpx # type: ignore
+    from httpx import ( # type: ignore
+        AsyncClient,
+        HTTPStatusError,
+        Timeout,
+        USE_CLIENT_DEFAULT,
+        BasicAuth
+    )
+except ModuleNotFoundError:
+    import httpx2 as httpx # type: ignore
+    from httpx2 import ( # type: ignore
+        AsyncClient,
+        HTTPStatusError,
+        Timeout,
+        USE_CLIENT_DEFAULT,
+        BasicAuth
+    )
 
 from ._ksql_types import QueryMetaData, create_ksql_error
 

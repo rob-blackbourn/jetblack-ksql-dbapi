@@ -5,10 +5,16 @@ from typing import (
     Self,
 )
 
-from httpx import (
-    AsyncClient,
-    BasicAuth
-)
+try:
+    from httpx import ( # type: ignore
+        AsyncClient,
+        BasicAuth
+    )
+except ModuleNotFoundError:
+    from httpx2 import ( # type: ignore
+        AsyncClient,
+        BasicAuth
+    )
 
 from .._paramstyles import ParamStyle
 

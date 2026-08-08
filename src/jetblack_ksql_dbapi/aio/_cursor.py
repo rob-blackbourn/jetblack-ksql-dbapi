@@ -10,14 +10,22 @@ from typing import (
     cast
 )
 
-import httpx
-from httpx import (
-    AsyncClient,
-    HTTPStatusError,
-    Timeout,
-    USE_CLIENT_DEFAULT,
-)
-
+try:
+    import httpx # type: ignore
+    from httpx import ( # type: ignore
+        AsyncClient,
+        HTTPStatusError,
+        Timeout,
+        USE_CLIENT_DEFAULT,
+    )
+except ModuleNotFoundError:
+    import httpx2 as httpx # type: ignore
+    from httpx2 import ( # type: ignore
+        AsyncClient,
+        HTTPStatusError,
+        Timeout,
+        USE_CLIENT_DEFAULT,
+    )
 
 from .._binding import bind_parameters
 from .._description import Description

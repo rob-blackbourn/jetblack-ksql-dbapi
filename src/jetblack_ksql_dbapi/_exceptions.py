@@ -56,17 +56,3 @@ class NotSupportedError(DatabaseError):
     supported by the database, e.g. requesting a .rollback() on a connection
     that does not support transaction or has transactions turned off.
     """
-
-
-__all__ = [
-    'Warning',
-    'Error',
-    'InterfaceError',
-    'DatabaseError',
-    'DataError',
-    'OperationalError',
-    'IntegrityError',
-    'InternalError',
-    'ProgrammingError',
-    'NotSupportedError',
-]

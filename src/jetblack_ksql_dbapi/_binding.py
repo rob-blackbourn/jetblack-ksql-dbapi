@@ -1,8 +1,5 @@
-from base64 import b64encode
 from collections.abc import Sequence
 from typing import Any, Mapping, cast
-
-from ._utils import classname
 
 from ._exceptions import ProgrammingError
 from ._paramstyles import ParamStyle, convert

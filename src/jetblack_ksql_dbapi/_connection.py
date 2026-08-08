@@ -1,14 +1,18 @@
-from __future__ import annotations
-
 from typing import (
     Literal,
     Self,
 )
 
-from httpx import (
-    Client,
-    BasicAuth
-)
+try:
+    from httpx import ( # type: ignore
+        Client,
+        BasicAuth
+    )
+except ModuleNotFoundError:
+    from httpx2 import ( # type: ignore
+        Client,
+        BasicAuth
+    )
 
 from jetblack_ksql_dbapi._paramstyles import ParamStyle
 
