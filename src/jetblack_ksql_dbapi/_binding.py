@@ -13,22 +13,25 @@ paramstyle	Meaning
 """
 
 from collections.abc import Sequence
-from typing import Any, Mapping, cast
+from typing import Any, Mapping, NamedTuple, cast
 
 from ._exceptions import ProgrammingError
 from ._paramstyles import ParamStyle, convert
 from ._types import FormatConfig, to_sql
 
 
-_DEFAULT_FORMAT_CONFIG = FormatConfig()
+class BindConfig(NamedTuple):
+    paramstyle: ParamStyle
+    format_config: FormatConfig
+
+
+_DEFAULT_FORMAT_CONFIG = BindConfig('qmark', FormatConfig())
 
 
 def _escape_parameter_sequence(
         parameters: Sequence[Any],
-        config: FormatConfig | None
+        config: FormatConfig
 ) -> Sequence[str]:
-    if config is None:
-        config = _DEFAULT_FORMAT_CONFIG
     return tuple(
         to_sql(parameter, config)
         for parameter in parameters
@@ -37,10 +40,8 @@ def _escape_parameter_sequence(
 
 def _escape_parameter_dict(
         parameters: Mapping[str, Any],
-        config: FormatConfig | None
+        config: FormatConfig
 ) -> dict[str, str]:
-    if config is None:
-        config = _DEFAULT_FORMAT_CONFIG
     values = tuple(
         to_sql(parameter, config)
         for parameter in parameters.values()
@@ -51,10 +52,9 @@ def _escape_parameter_dict(
 def _bind_parameters_sequence(
         query: str,
         params: Sequence[Any],
-        param_style: ParamStyle,
-        config: FormatConfig
+        config: BindConfig
 ) -> str:
-    match param_style:
+    match config.paramstyle:
 
         case "qmark":
             query, params = cast(
@@ -66,9 +66,9 @@ def _bind_parameters_sequence(
             pass
 
         case _:
-            raise ProgrammingError(f"Invalid param style {param_style}")
+            raise ProgrammingError(f"Invalid param style {config.paramstyle}")
 
-    escaped_params = _escape_parameter_sequence(params, config)
+    escaped_params = _escape_parameter_sequence(params, config.format_config)
 
     return query % escaped_params
 
@@ -76,24 +76,23 @@ def _bind_parameters_sequence(
 def _bind_parameters_dict(
         query: str,
         params: Mapping[str, Any],
-        param_style: ParamStyle,
-        config: FormatConfig
+        config: BindConfig
 ) -> str:
-    match param_style:
+    match config.paramstyle:
 
         case 'numeric' | 'named':
             query, params = cast(
                 tuple[str, Mapping[str, Any]],
-                convert(param_style, 'pyformat', query, params)
+                convert(config.paramstyle, 'pyformat', query, params)
             )
 
         case 'pyformat':
             pass
 
         case _:
-            raise ProgrammingError(f"Invalid param style {param_style}")
+            raise ProgrammingError(f"Invalid param style {config.paramstyle}")
 
-    escaped_params = _escape_parameter_dict(params, config)
+    escaped_params = _escape_parameter_dict(params, config.format_config)
 
     return query % escaped_params
 
@@ -101,16 +100,14 @@ def _bind_parameters_dict(
 def bind(
         query: str,
         params: Sequence[Any] | Mapping[str, Any] | None,
-        param_style: ParamStyle,
-        config: FormatConfig
+        config: BindConfig
 ) -> str:
     """Bind parameters to query.
 
     Args:
         query (str): The query.
         params (Sequence[Any] | Mapping[str, Any] | None): The parameters to bind.
-        param_style (ParamStyle): The parameter binding style.
-        config (FormatConfig): Format configuration.
+        config (BindConfig): Bind configuration.
 
     Returns:
         str: The query with the parameter markers replaced wit the parameters.
@@ -118,6 +115,6 @@ def bind(
     if params is None:
         return query
     elif isinstance(params, Sequence):
-        return _bind_parameters_sequence(query, params, param_style, config)
+        return _bind_parameters_sequence(query, params, config)
     else:
-        return _bind_parameters_dict(query, params, param_style, config)
+        return _bind_parameters_dict(query, params, config)

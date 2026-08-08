@@ -27,7 +27,7 @@ except ModuleNotFoundError:
         USE_CLIENT_DEFAULT,
     )
 
-from .._binding import bind
+from .._binding import BindConfig, bind
 from .._constants import CONTENT_TYPE_DELIMITED, CONTENT_TYPE_JSON
 from .._description import Description
 from .._exceptions import Error, NotSupportedError
@@ -35,7 +35,6 @@ from .._ksql_inspector import KsqlInspector
 from .._ksql_types import QueryMetaData, create_ksql_error
 from .._paramstyles import ParamStyle
 from .._statement_transformer import StatementStyle, StatementType
-from .._types import FormatConfig
 
 from ._abc import Cursor
 
@@ -48,16 +47,15 @@ class KsqlAsyncCursor(Cursor):
     def __init__(
             self,
             client: AsyncClient,
-            format_config: FormatConfig,
+            bind_config: BindConfig,
             inspector: KsqlInspector,
-            paramstyle: ParamStyle,
             close_timeout: float | None,
     ) -> None:
         self._client = client
-        self._format_config = format_config
+        self._bind_config = bind_config
         self._inspector = inspector
-        self._paramstyle = paramstyle
         self._close_timeout = close_timeout
+
         self._query_id: str | None = None
         self._iter: AsyncIterator[Sequence[Any]] | None = None
         self._description: list[Description] | None = None
@@ -111,15 +109,7 @@ class KsqlAsyncCursor(Cursor):
     ) -> None:
         self._clear_state()
 
-        if params:
-            bound_query = bind(
-                query,
-                params,
-                self._paramstyle,
-                self._format_config
-            )
-        else:
-            bound_query = query
+        bound_query = bind(query, params, self._bind_config)
 
         statement_tuple = self._inspector.find_statement_type(bound_query)
 
@@ -146,8 +136,7 @@ class KsqlAsyncCursor(Cursor):
             bind(
                 query,
                 params,
-                self._paramstyle,
-                self._format_config
+                self._bind_config
             )
             for params in param_seq
         ]
@@ -254,7 +243,10 @@ class KsqlAsyncCursor(Cursor):
             parse_int=lambda x: x
         )
         return [
-            description.type_code.from_sql(value, self._format_config)
+            description.type_code.from_sql(
+                value,
+                self._bind_config.format_config
+            )
             for value, description in zip(row, self._description)
         ]
 

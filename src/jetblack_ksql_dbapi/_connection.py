@@ -19,6 +19,7 @@ except ModuleNotFoundError:
 from jetblack_ksql_dbapi._paramstyles import ParamStyle
 
 from ._abc import Connection, Cursor
+from ._binding import BindConfig
 from ._cursor import KsqlSyncCursor
 from ._exceptions import Error
 from ._ksql_inspector import KsqlInspector
@@ -34,14 +35,12 @@ class KsqlSyncConnection(Connection):
     def __init__(
             self,
             client: Client,
-            format_config: FormatConfig,
-            paramstyle: ParamStyle,
+            bind_config: BindConfig,
             close_timeout: float | None,
     ) -> None:
         self._client = client
-        self._format_config = format_config
+        self._bind_config = bind_config
         self._inspector = KsqlInspector()
-        self._paramstyle = paramstyle
         self._close_timeout = close_timeout
 
     @classmethod
@@ -51,8 +50,7 @@ class KsqlSyncConnection(Connection):
             *,
             api_key: str | None = None,
             api_secret: str | None = None,
-            format_config: FormatConfig | None = None,
-            paramstyle: ParamStyle = "qmark",
+            bind_config: BindConfig | None = None,
             close_timeout: float | None = None
     ) -> Self:
         """Connect to the database.
@@ -63,10 +61,8 @@ class KsqlSyncConnection(Connection):
                 None.
             api_secret (str | None, optional): An optional API secret. Defaults
                 to None.
-            format_config (FormatConfig | None, optional): Optional format
+            bind_config (BindConfig | None, optional): Optional bind
                 configuration. Defaults to None.
-            paramstyle (ParamStyle, optional): The param style. Defaults to
-                "qmark".
             close_timeout (float | None, optional): The close timeout. Defaults to None.
 
         Returns:
@@ -80,8 +76,7 @@ class KsqlSyncConnection(Connection):
         client = Client(base_url=url, auth=auth, http1=False, http2=True)
         return cls(
             client,
-            format_config or FormatConfig(),
-            paramstyle,
+            bind_config or BindConfig('qmark', FormatConfig()),
             close_timeout
         )
 
@@ -91,9 +86,8 @@ class KsqlSyncConnection(Connection):
 
         return KsqlSyncCursor(
             self._client,
-            self._format_config,
+            self._bind_config,
             self._inspector,
-            self._paramstyle,
             self._close_timeout
         )
 

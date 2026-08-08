@@ -28,7 +28,7 @@ except ModuleNotFoundError:
     )
 
 from ._abc import Cursor
-from ._binding import bind
+from ._binding import BindConfig, bind
 from ._constants import CONTENT_TYPE_DELIMITED, CONTENT_TYPE_JSON
 from ._description import Description
 from ._exceptions import Error, NotSupportedError, ProgrammingError
@@ -36,7 +36,6 @@ from ._ksql_inspector import KsqlInspector
 from ._ksql_types import QueryMetaData, create_ksql_error
 from ._paramstyles import ParamStyle
 from ._statement_transformer import StatementStyle, StatementType
-from ._types import FormatConfig
 
 
 type QueryType = Literal['print', 'select']
@@ -48,15 +47,13 @@ class KsqlSyncCursor(Cursor):
     def __init__(
             self,
             client: Client,
-            binding_config: FormatConfig,
+            bind_config: BindConfig,
             inspector: KsqlInspector,
-            paramstyle: ParamStyle,
             close_timeout: float | None,
     ) -> None:
         self._client = client
-        self._binding_config = binding_config
+        self._bind_config = bind_config
         self._inspector = inspector
-        self._paramstyle = paramstyle
         self._close_timeout = close_timeout
 
         self.arraysize: int = 1
@@ -112,12 +109,7 @@ class KsqlSyncCursor(Cursor):
     ) -> None:
         self._clear_state()
 
-        bound_query = bind(
-            query,
-            params,
-            self._paramstyle,
-            self._binding_config
-        )
+        bound_query = bind(query, params, self._bind_config)
 
         statement_tuple = self._inspector.find_statement_type(bound_query)
 
@@ -141,13 +133,8 @@ class KsqlSyncCursor(Cursor):
             raise ProgrammingError("Must have params")
 
         bound_queries = [
-            bind(
-                query,
-                args,
-                self._paramstyle,
-                self._binding_config
-            )
-            for args in param_seq
+            bind(query, params, self._bind_config)
+            for params in param_seq
         ]
 
         (statement_style, _) = self._inspector.find_statement_type(
@@ -253,7 +240,10 @@ class KsqlSyncCursor(Cursor):
             parse_int=lambda x: x
         )
         return [
-            description.type_code.from_sql(value, self._binding_config)
+            description.type_code.from_sql(
+                value,
+                self._bind_config.format_config
+            )
             for value, description in zip(row, self._description)
         ]
 
