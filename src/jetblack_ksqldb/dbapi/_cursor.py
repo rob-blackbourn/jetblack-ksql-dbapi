@@ -18,12 +18,14 @@ from httpx import (
     USE_CLIENT_DEFAULT,
 )
 
+from jetblack_ksqldb.dbapi._exceptions import NotSupportedError
 from jetblack_ksqldb.dbapi._paramstyles import ParamStyle
 
 from .._types import QueryMetaData, create_ksql_error
 
 from ._binding import bind_parameters
 from ._description import Description
+from ._exceptions import Error, NotSupportedError
 from ._ksql_inspector import KsqlInspector
 from ._statement_transformer import StatementStyle, StatementType
 from ._types import FormatConfig
@@ -42,19 +44,54 @@ class Cursor:
             client: Client,
             binding_config: FormatConfig,
             inspector: KsqlInspector,
-            paramstyle: ParamStyle
+            paramstyle: ParamStyle,
+            close_timeout: float = 1.0,
     ) -> None:
         self._client = client
         self._binding_config = binding_config
         self._inspector = inspector
         self._paramstyle = paramstyle
-        self._result: Iterator | None
+        self._query_id: str | None = None
         self._iter: Iterator[Sequence[Any]] | None = None
         self._description: list[Description] | None = None
+        self._close_timeout = close_timeout
+
+        self.arraysize: int = 1
 
     @property
     def description(self) -> list[Description] | None:
         return self._description
+
+    @property
+    def rowcount(self) -> int:
+        # TODO: There can only be a rowcount for "pull" queries. We could detect
+        # this in the parser. Then we would need to fetch all the rows and wrap
+        # the result iterator.
+        return -1
+
+    def callproc(self, procname: str, parameters: Sequence[Any] | None = None) -> None:
+        raise NotSupportedError("ksql does not support stored procedures")
+
+    def close(self) -> None:
+        if self._query_id is None:
+            return
+
+        headers = {
+            "content-type": CONTENT_TYPE_JSON
+        }
+
+        body = {
+            "queryId": self._query_id
+        }
+
+        response = self._client.post(
+            "/close-query",
+            headers=headers,
+            json=body,
+            timeout=self._close_timeout
+        )
+        if not response.is_success:
+            raise Error("Failed to close query")
 
     def execute(
             self,
@@ -187,6 +224,7 @@ class Cursor:
             line_iter = response.iter_lines()
             meta_data = cast(QueryMetaData, json.loads(next(line_iter)))
             self._description = Description.create_all(meta_data)
+            self._query_id = meta_data['queryId']
             self._iter = map(self._to_row, line_iter)
         else:
             self._iter = response.iter_lines()
@@ -206,14 +244,34 @@ class Cursor:
         ]
 
     def fetchone(self) -> Sequence[Any]:
-        assert self._iter is not None
-        row = next(self._iter)
-        return row
+        if self._iter is None:
+            raise Error("No results available")
+
+        return next(self._iter)
+
+    def fetchmany(self, size: int | None = None) -> Sequence[Sequence[Any]]:
+        if self._iter is None:
+            raise Error("No results available")
+
+        if size is None:
+            size = self.arraysize
+
+        return [next(self._iter) for _ in range(size)]
 
     def fetchall(self) -> Sequence[Sequence[Any]]:
-        assert self._iter is not None
+        if self._iter is None:
+            raise Error("No results available")
+
         return list(self._iter)
 
+    def nextset(self) -> bool | None:
+        return None
+
+    def setinputsizes(self, sizes: Sequence[Any]) -> None:
+        pass
+
     def __iter__(self) -> Iterator[Sequence[Any]]:
-        assert self._iter is not None
+        if self._iter is None:
+            raise Error("No results available")
+
         return self._iter

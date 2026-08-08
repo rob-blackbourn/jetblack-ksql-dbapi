@@ -13,6 +13,7 @@ from httpx import (
 from jetblack_ksqldb.dbapi._paramstyles import ParamStyle
 
 from ._cursor import Cursor
+from ._exceptions import Error
 from ._ksql_inspector import KsqlInspector
 from ._types import FormatConfig
 
@@ -54,7 +55,19 @@ class Connection:
         return cls(client, binding_config or FormatConfig(), paramstyle=paramstyle)
 
     def cursor(self) -> Cursor:
+        if self._client.is_closed:
+            raise Error("Connection is closed")
+
         return Cursor(self._client, self._binding_config, self._inspector, paramstyle=self._paramstyle)
+
+    def close(self) -> None:
+        self._client.close()
+
+    def commit(self) -> None:
+        raise Error("ksql does not support transactions")
+
+    def rollback(self) -> None:
+        raise Error("ksql does not support transactions")
 
 
 connect = Connection.connect
