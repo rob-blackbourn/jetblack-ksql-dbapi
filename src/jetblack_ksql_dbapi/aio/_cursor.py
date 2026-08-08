@@ -28,7 +28,7 @@ except ModuleNotFoundError:
     )
 
 from .._binding import bind
-from ..__constants import CONTENT_TYPE_DELIMITED, CONTENT_TYPE_JSON
+from .._constants import CONTENT_TYPE_DELIMITED, CONTENT_TYPE_JSON
 from .._description import Description
 from .._exceptions import Error, NotSupportedError
 from .._ksql_inspector import KsqlInspector
@@ -40,7 +40,6 @@ from .._types import FormatConfig
 from ._abc import Cursor
 
 type QueryType = Literal['print', 'select']
-
 
 
 class KsqlAsyncCursor(Cursor):
