@@ -29,6 +29,7 @@ except ModuleNotFoundError:
 
 from ._abc import Cursor
 from ._binding import bind
+from ._constants import CONTENT_TYPE_DELIMITED, CONTENT_TYPE_JSON
 from ._description import Description
 from ._exceptions import Error, NotSupportedError, ProgrammingError
 from ._ksql_inspector import KsqlInspector
@@ -39,9 +40,6 @@ from ._types import FormatConfig
 
 
 type QueryType = Literal['print', 'select']
-
-CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
-CONTENT_TYPE_DELIMITED = "application/vnd.ksqlapi.delimited.v1"
 
 
 class KsqlSyncCursor(Cursor):

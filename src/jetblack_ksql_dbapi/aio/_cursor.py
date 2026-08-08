@@ -28,6 +28,7 @@ except ModuleNotFoundError:
     )
 
 from .._binding import bind
+from ..__constants import CONTENT_TYPE_DELIMITED, CONTENT_TYPE_JSON
 from .._description import Description
 from .._exceptions import Error, NotSupportedError
 from .._ksql_inspector import KsqlInspector
@@ -40,8 +41,6 @@ from ._abc import Cursor
 
 type QueryType = Literal['print', 'select']
 
-CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
-CONTENT_TYPE_DELIMITED = "application/vnd.ksqlapi.delimited.v1"
 
 
 class KsqlAsyncCursor(Cursor):
