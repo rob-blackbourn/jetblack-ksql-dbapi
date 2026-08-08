@@ -249,14 +249,5 @@ class Cursor:
         assert self._iter is not None
         return self._iter
 
-    def _execute_print(
-            self,
-            sql: str,
-            *,
-            timeout: float = 1.0,
-            properties: dict[str, Any] | None = None
-    ) -> None:
-        raise RuntimeError()
-
 
 connect = Connection.connect
