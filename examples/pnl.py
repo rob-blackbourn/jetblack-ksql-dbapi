@@ -4,7 +4,7 @@ from decimal import Decimal
 import json
 from typing import Any, TypedDict, cast
 
-from jetblack_ksqldb import AsyncKsqlDbClient
+from jetblack_ksql_dbapi import AsyncKsqlDbClient
 
 
 class CurrencyDict(TypedDict):

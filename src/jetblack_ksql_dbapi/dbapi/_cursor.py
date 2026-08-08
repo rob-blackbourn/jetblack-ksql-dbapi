@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from typing import (
     Any,
-    AsyncIterator,
+    Iterator,
     Literal,
     Mapping,
     Sequence,
@@ -12,23 +12,23 @@ from typing import (
 
 import httpx
 from httpx import (
-    AsyncClient,
+    Client,
     HTTPStatusError,
     Timeout,
     USE_CLIENT_DEFAULT,
 )
 
-from jetblack_ksqldb.dbapi._exceptions import NotSupportedError
-from jetblack_ksqldb.dbapi._paramstyles import ParamStyle
+from jetblack_ksql_dbapi.dbapi._exceptions import NotSupportedError
+from jetblack_ksql_dbapi.dbapi._paramstyles import ParamStyle
 
-from ..._types import QueryMetaData, create_ksql_error
+from .._types import QueryMetaData, create_ksql_error
 
-from .._binding import bind_parameters
-from .._description import Description
-from .._exceptions import Error, NotSupportedError
-from .._ksql_inspector import KsqlInspector
-from .._statement_transformer import StatementStyle, StatementType
-from .._types import FormatConfig
+from ._binding import bind_parameters
+from ._description import Description
+from ._exceptions import Error, NotSupportedError
+from ._ksql_inspector import KsqlInspector
+from ._statement_transformer import StatementStyle, StatementType
+from ._types import FormatConfig
 
 
 type QueryType = Literal['print', 'select']
@@ -41,7 +41,7 @@ class Cursor:
 
     def __init__(
             self,
-            client: AsyncClient,
+            client: Client,
             binding_config: FormatConfig,
             inspector: KsqlInspector,
             paramstyle: ParamStyle,
@@ -52,7 +52,7 @@ class Cursor:
         self._inspector = inspector
         self._paramstyle = paramstyle
         self._query_id: str | None = None
-        self._iter: AsyncIterator[Sequence[Any]] | None = None
+        self._iter: Iterator[Sequence[Any]] | None = None
         self._description: list[Description] | None = None
         self._close_timeout = close_timeout
 
@@ -72,7 +72,7 @@ class Cursor:
     def callproc(self, procname: str, parameters: Sequence[Any] | None = None) -> None:
         raise NotSupportedError("ksql does not support stored procedures")
 
-    async def close(self) -> None:
+    def close(self) -> None:
         if self._query_id is None:
             return
 
@@ -84,7 +84,7 @@ class Cursor:
             "queryId": self._query_id
         }
 
-        response = await self._client.post(
+        response = self._client.post(
             "/close-query",
             headers=headers,
             json=body,
@@ -93,7 +93,7 @@ class Cursor:
         if not response.is_success:
             raise Error("Failed to close query")
 
-    async def execute(
+    def execute(
             self,
             query: str,
             params: Sequence[Any] | Mapping[str, Any] | None = None
@@ -113,13 +113,13 @@ class Cursor:
         match statement_tuple:
 
             case (StatementStyle.COMMAND, _):
-                await self._ksql(bound_query)
+                self._ksql(bound_query)
             case (StatementStyle.QUERY, StatementType.SELECT):
-                await self._query_stream(bound_query, 'select')
+                self._query_stream(bound_query, 'select')
             case (StatementStyle.QUERY, StatementType.PRINT):
-                await self._query_stream(bound_query, 'print')
+                self._query_stream(bound_query, 'print')
 
-    async def executemany(
+    def executemany(
             self,
             query: str,
             params: Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]
@@ -143,9 +143,9 @@ class Cursor:
             raise ValueError("Expected a command")
 
         ksql = "".join(bound_queries)
-        await self._ksql(ksql)
+        self._ksql(ksql)
 
-    async def _ksql(
+    def _ksql(
             self,
             ksql: str,
             *,
@@ -167,7 +167,7 @@ class Cursor:
         if command_sequence_number is not None:
             body['commandSequenceNumber'] = command_sequence_number
 
-        response = await self._client.post(
+        response = self._client.post(
             "/ksql",
             headers=headers,
             json=body,
@@ -186,7 +186,7 @@ class Cursor:
             response=response
         )
 
-    async def _query_stream(
+    def _query_stream(
             self,
             sql: str,
             query_type: QueryType,
@@ -214,20 +214,20 @@ class Cursor:
             json=body,
             timeout=Timeout(timeout, read=None)
         )
-        response = await self._client.send(
+        response = self._client.send(
             request=request,
             stream=True
         )
 
         response.raise_for_status()
         if query_type == 'select':
-            line_iter = response.aiter_lines()
-            meta_data = cast(QueryMetaData, json.loads(await anext(line_iter)))
+            line_iter = response.iter_lines()
+            meta_data = cast(QueryMetaData, json.loads(next(line_iter)))
             self._description = Description.create_all(meta_data)
             self._query_id = meta_data['queryId']
-            self._iter = (self._to_row(line) async for line in line_iter)
+            self._iter = map(self._to_row, line_iter)
         else:
-            self._iter = response.aiter_lines()
+            self._iter = response.iter_lines()
             self._description = None
 
     def _to_row(self, line: str) -> Sequence[Any]:
@@ -243,26 +243,26 @@ class Cursor:
             for value, description in zip(row, self._description)
         ]
 
-    async def fetchone(self) -> Sequence[Any]:
+    def fetchone(self) -> Sequence[Any]:
         if self._iter is None:
             raise Error("No results available")
 
-        return await anext(self._iter)
+        return next(self._iter)
 
-    async def fetchmany(self, size: int | None = None) -> Sequence[Sequence[Any]]:
+    def fetchmany(self, size: int | None = None) -> Sequence[Sequence[Any]]:
         if self._iter is None:
             raise Error("No results available")
 
         if size is None:
             size = self.arraysize
 
-        return [await anext(self._iter) for _ in range(size)]
+        return [next(self._iter) for _ in range(size)]
 
-    async def fetchall(self) -> Sequence[Sequence[Any]]:
+    def fetchall(self) -> Sequence[Sequence[Any]]:
         if self._iter is None:
             raise Error("No results available")
 
-        return [row async for row in self._iter]
+        return list(self._iter)
 
     def nextset(self) -> bool | None:
         return None
@@ -270,7 +270,7 @@ class Cursor:
     def setinputsizes(self, sizes: Sequence[Any]) -> None:
         pass
 
-    async def __aiter__(self) -> AsyncIterator[Sequence[Any]]:
+    def __iter__(self) -> Iterator[Sequence[Any]]:
         if self._iter is None:
             raise Error("No results available")
 

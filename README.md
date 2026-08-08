@@ -1,6 +1,6 @@
-# jetblack-ksqldb
+# jetblack-ksql-dbapi
 
-An asyncio KsqlDB client for Python >= 3.12.
+A vanilla and asyncio ksql DBAPI interface for Python >= 3.12.
 
 ## Status
 

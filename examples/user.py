@@ -1,6 +1,6 @@
 import asyncio
 
-from jetblack_ksqldb import AsyncKsqlDbClient
+from jetblack_ksql_dbapi import AsyncKsqlDbClient
 
 
 async def drop_tables(ksqldb: AsyncKsqlDbClient) -> None:

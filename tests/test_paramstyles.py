@@ -1,4 +1,4 @@
-from jetblack_ksqldb.dbapi._paramstyles import (
+from jetblack_ksql_dbapi.dbapi._paramstyles import (
     convert,
     Parameters,
     ParamStyle,

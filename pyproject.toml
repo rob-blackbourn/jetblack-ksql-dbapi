@@ -1,7 +1,7 @@
 [project]
-name = "jetblack-ksqldb"
+name = "jetblack-ksql-dbapi"
 version = "0.1.0"
-description = "An asyncio client for ksqldb"
+description = "A vanilla and asyncio DBAPI interface for ksql"
 authors = [{name = "Rob Blackbourn", email = "rob.blackbourn@gmail.com"}]
 readme = "README.md"
 dependencies = [
@@ -18,8 +18,8 @@ dev = [
 ]
 
 [project.urls]
-Repository = "https://github.com/rob-blackbourn/jetblack-ksqldb"
-Issues = "https://github.com/rob-blackbourn/jetblack-ksqldb/issues"
+Repository = "https://github.com/rob-blackbourn/jetblack-ksql-dbapi"
+Issues = "https://github.com/rob-blackbourn/jetblack-ksql-dbapi/issues"
 
 [build-system]
 requires = ["setuptools>=61.0"]

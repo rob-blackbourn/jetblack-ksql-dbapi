@@ -10,7 +10,7 @@ from httpx import (
     BasicAuth
 )
 
-from jetblack_ksqldb.dbapi._paramstyles import ParamStyle
+from jetblack_ksql_dbapi.dbapi._paramstyles import ParamStyle
 
 from ._cursor import Cursor
 from .._exceptions import Error
