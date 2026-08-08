@@ -1,3 +1,5 @@
+"""An asyncio cursor class for ksql"""
+
 import json
 from typing import (
     Any,
@@ -64,6 +66,11 @@ class KsqlAsyncCursor(Cursor):
 
         self.arraysize: int = 1
 
+    def _clear_state(self) -> None:
+        self._query_id = None
+        self._iter = None
+        self._description = None
+
     @property
     def description(self) -> list[Description] | None:
         return self._description
@@ -104,6 +111,8 @@ class KsqlAsyncCursor(Cursor):
             query: str,
             params: Sequence[Any] | Mapping[str, Any] | None = None
     ) -> None:
+        self._clear_state()
+
         if params:
             bound_query = bind(
                 query,
@@ -130,6 +139,8 @@ class KsqlAsyncCursor(Cursor):
             query: str,
             param_seq: Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]
     ) -> None:
+        self._clear_state()
+
         if len(param_seq) == 0:
             raise ValueError("Must have params")
 

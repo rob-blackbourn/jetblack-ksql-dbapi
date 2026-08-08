@@ -59,12 +59,18 @@ class KsqlSyncCursor(Cursor):
         self._binding_config = binding_config
         self._inspector = inspector
         self._paramstyle = paramstyle
-        self._query_id: str | None = None
-        self._iter: Iterator[Sequence[Any]] | None = None
-        self._description: list[Description] | None = None
         self._close_timeout = close_timeout
 
         self.arraysize: int = 1
+
+        self._query_id: str | None = None
+        self._iter: Iterator[Sequence[Any]] | None = None
+        self._description: list[Description] | None = None
+
+    def _clear_state(self) -> None:
+        self._query_id = None
+        self._iter = None
+        self._description = None
 
     @property
     def description(self) -> Sequence[Description] | None:
@@ -106,6 +112,8 @@ class KsqlSyncCursor(Cursor):
             query: str,
             params: Sequence[Any] | Mapping[str, Any] | None = None
     ) -> None:
+        self._clear_state()
+
         bound_query = bind(
             query,
             params,
@@ -129,6 +137,8 @@ class KsqlSyncCursor(Cursor):
             query: str,
             param_seq: Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]
     ) -> None:
+        self._clear_state()
+
         if len(param_seq) == 0:
             raise ProgrammingError("Must have params")
 
