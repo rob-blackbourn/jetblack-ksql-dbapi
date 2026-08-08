@@ -20,6 +20,8 @@ from httpx import (
     BasicAuth
 )
 
+from jetblack_ksqldb.dbapi._paramstyles import ParamStyle
+
 from .._types import QueryMetaData, create_ksql_error
 
 from ._binding import bind_parameters
@@ -41,10 +43,12 @@ class Connection:
             self,
             client: Client,
             binding_config: FormatConfig,
+            paramstyle: ParamStyle = "qmark"
     ) -> None:
         self._client = client
         self._binding_config = binding_config
         self._inspector = KsqlInspector()
+        self._paramstyle = paramstyle
 
     @classmethod
     def connect(
@@ -53,6 +57,7 @@ class Connection:
             api_key: str | None = None,
             api_secret: str | None = None,
             binding_config: FormatConfig | None = None,
+            paramstyle: ParamStyle = "qmark"
     ) -> Self:
         auth = (
             BasicAuth(api_key, api_secret)
@@ -60,10 +65,10 @@ class Connection:
             None
         )
         client = Client(base_url=url, auth=auth, http1=False, http2=True)
-        return cls(client, binding_config or FormatConfig())
+        return cls(client, binding_config or FormatConfig(), paramstyle=paramstyle)
 
     def cursor(self) -> Cursor:
-        return Cursor(self._client, self._binding_config, self._inspector)
+        return Cursor(self._client, self._binding_config, self._inspector, paramstyle=self._paramstyle)
 
 
 class Cursor:
@@ -72,11 +77,13 @@ class Cursor:
             self,
             client: Client,
             binding_config: FormatConfig,
-            inspector: KsqlInspector
+            inspector: KsqlInspector,
+            paramstyle: ParamStyle
     ) -> None:
         self._client = client
         self._binding_config = binding_config
         self._inspector = inspector
+        self._paramstyle = paramstyle
         self._result: Iterator | None
         self._iter: Iterator[Sequence[Any]] | None = None
         self._description: list[Description] | None = None
@@ -90,12 +97,11 @@ class Cursor:
             query: str,
             params: Sequence[Any] | Mapping[str, Any] | None = None
     ) -> None:
-        import jetblack_ksqldb.dbapi
         if params:
             bound_query = bind_parameters(
                 query,
                 params,
-                jetblack_ksqldb.dbapi.paramstyle,
+                self._paramstyle,
                 self._binding_config
             )
         else:
@@ -120,12 +126,11 @@ class Cursor:
         if len(params) == 0:
             raise ValueError("Must have params")
 
-        import jetblack_ksqldb.dbapi
         bound_queries = [
             bind_parameters(
                 query,
                 args,
-                jetblack_ksqldb.dbapi.paramstyle,
+                self._paramstyle,
                 self._binding_config
             )
             for args in params
