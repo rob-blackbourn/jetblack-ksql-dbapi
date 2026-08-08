@@ -4,15 +4,16 @@ from .._types import QueryMetaData
 
 from ._types import (
     DBAPITypeObject,
-    STRING,
-    BINARY,
-    NUMBER, DATETIME,
-    ROWID,
     BIGINT,
+    BINARY,
     BOOLEAN,
     DATE,
+    DATETIME,
     DECIMAL,
     INTEGER,
+    NUMBER,
+    ROWID,
+    STRING,
     TIME,
 )
 

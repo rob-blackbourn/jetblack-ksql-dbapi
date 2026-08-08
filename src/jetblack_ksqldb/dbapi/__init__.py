@@ -14,6 +14,19 @@ from ._exceptions import (
     NotSupportedError,
 )
 from ._paramstyles import ParamStyle
+from ._types import (
+    BIGINT,
+    BINARY,
+    BOOLEAN,
+    DATE,
+    DATETIME,
+    DECIMAL,
+    INTEGER,
+    NUMBER,
+    ROWID,
+    STRING,
+    TIME,
+)
 
 # DBAPI compliance
 apilevel = "2.0"
@@ -40,4 +53,17 @@ __all__ = [
     'InternalError',
     'ProgrammingError',
     'NotSupportedError',
+
+    # ._types
+    'BIGINT',
+    'BINARY',
+    'BOOLEAN',
+    'DATE',
+    'DATETIME',
+    'DECIMAL',
+    'INTEGER',
+    'NUMBER',
+    'ROWID',
+    'STRING',
+    'TIME',
 ]
