@@ -1,8 +1,8 @@
 import jetblack_ksql_dbapi as ksql
-from jetblack_ksql_dbapi import KsqlSyncConnection
+from jetblack_ksql_dbapi import Connection
 
 
-def drop_tables(conn: KsqlSyncConnection) -> None:
+def drop_tables(conn: Connection) -> None:
 
     cur = conn.cursor()
 
@@ -19,7 +19,7 @@ DROP TABLE IF EXISTS user DELETE TOPIC;
     )
 
 
-def create_tables(conn: KsqlSyncConnection) -> None:
+def create_tables(conn: Connection) -> None:
     cur = conn.cursor()
 
     cur.execute(
@@ -46,7 +46,7 @@ CREATE TABLE user_view AS SELECT * FROM user;
     )
 
 
-def insert_data(conn: KsqlSyncConnection) -> None:
+def insert_data(conn: Connection) -> None:
     cur = conn.cursor()
 
     cur.executemany(
@@ -61,7 +61,7 @@ INSERT INTO user(user_id, username, created, age) VALUES (?, ?, ?, ?);
     )
 
 
-def print_data(conn: KsqlSyncConnection) -> None:
+def print_data(conn: Connection) -> None:
     cur = conn.cursor()
 
     cur.execute(
@@ -74,7 +74,7 @@ PRINT user FROM BEGINNING;
         print(row)
 
 
-def select_all(conn: KsqlSyncConnection) -> None:
+def select_all(conn: Connection) -> None:
     cur = conn.cursor()
 
     cur.execute(

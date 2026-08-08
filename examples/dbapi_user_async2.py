@@ -1,7 +1,6 @@
 import asyncio
 
 import jetblack_ksql_dbapi.aio as ksql
-from jetblack_ksql_dbapi.aio import KsqlAsyncConnection
 
 
 async def main() -> None:

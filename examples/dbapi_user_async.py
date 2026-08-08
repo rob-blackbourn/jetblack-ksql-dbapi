@@ -1,10 +1,10 @@
 import asyncio
 
 import jetblack_ksql_dbapi.aio as ksql
-from jetblack_ksql_dbapi.aio import KsqlAsyncConnection
+from jetblack_ksql_dbapi.aio import Connection
 
 
-async def drop_tables(conn: KsqlAsyncConnection) -> None:
+async def drop_tables(conn: Connection) -> None:
 
     cur = conn.cursor()
 
@@ -21,7 +21,7 @@ DROP TABLE IF EXISTS user DELETE TOPIC;
     )
 
 
-async def create_tables(conn: KsqlAsyncConnection) -> None:
+async def create_tables(conn: Connection) -> None:
     cur = conn.cursor()
 
     await cur.execute(
@@ -48,7 +48,7 @@ CREATE TABLE user_view AS SELECT * FROM user;
     )
 
 
-async def insert_data(conn: KsqlAsyncConnection) -> None:
+async def insert_data(conn: Connection) -> None:
     cur = conn.cursor()
 
     await cur.executemany(
@@ -63,7 +63,7 @@ INSERT INTO user(user_id, username, created, age) VALUES (?, ?, ?, ?);
     )
 
 
-async def print_data(conn: KsqlAsyncConnection) -> None:
+async def print_data(conn: Connection) -> None:
     cur = conn.cursor()
 
     await cur.execute(
@@ -76,7 +76,7 @@ PRINT user FROM BEGINNING;
         print(row)
 
 
-async def select_all(conn: KsqlAsyncConnection) -> None:
+async def select_all(conn: Connection) -> None:
     cur = conn.cursor()
 
     await cur.execute(
