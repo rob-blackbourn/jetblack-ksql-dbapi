@@ -32,12 +32,12 @@ class KsqlAsyncConnection(Connection):
     def __init__(
             self,
             client: AsyncClient,
-            binding_config: FormatConfig,
+            format_config: FormatConfig,
             paramstyle: ParamStyle,
             close_timeout: float | None,
     ) -> None:
         self._client = client
-        self._binding_config = binding_config
+        self._format_config = format_config
         self._inspector = KsqlInspector()
         self._paramstyle = paramstyle
         self._close_timeout = close_timeout
@@ -49,7 +49,7 @@ class KsqlAsyncConnection(Connection):
             *,
             api_key: str | None = None,
             api_secret: str | None = None,
-            binding_config: FormatConfig | None = None,
+            format_config: FormatConfig | None = None,
             paramstyle: ParamStyle = "qmark",
             close_timeout: float | None = None
     ) -> Connection:
@@ -78,7 +78,7 @@ class KsqlAsyncConnection(Connection):
         client = AsyncClient(base_url=url, auth=auth, http1=False, http2=True)
         return cls(
             client,
-            binding_config or FormatConfig(),
+            format_config or FormatConfig(),
             paramstyle,
             close_timeout
         )
@@ -89,7 +89,7 @@ class KsqlAsyncConnection(Connection):
 
         return KsqlAsyncCursor(
             self._client,
-            self._binding_config,
+            self._format_config,
             self._inspector,
             self._paramstyle,
             self._close_timeout

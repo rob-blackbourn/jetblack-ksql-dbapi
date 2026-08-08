@@ -50,19 +50,19 @@ class KsqlAsyncCursor(Cursor):
     def __init__(
             self,
             client: AsyncClient,
-            binding_config: FormatConfig,
+            format_config: FormatConfig,
             inspector: KsqlInspector,
             paramstyle: ParamStyle,
             close_timeout: float | None,
     ) -> None:
         self._client = client
-        self._binding_config = binding_config
+        self._format_config = format_config
         self._inspector = inspector
         self._paramstyle = paramstyle
+        self._close_timeout = close_timeout
         self._query_id: str | None = None
         self._iter: AsyncIterator[Sequence[Any]] | None = None
         self._description: list[Description] | None = None
-        self._close_timeout = close_timeout
 
         self.arraysize: int = 1
 
@@ -118,7 +118,7 @@ class KsqlAsyncCursor(Cursor):
                 query,
                 params,
                 self._paramstyle,
-                self._binding_config
+                self._format_config
             )
         else:
             bound_query = query
@@ -149,7 +149,7 @@ class KsqlAsyncCursor(Cursor):
                 query,
                 params,
                 self._paramstyle,
-                self._binding_config
+                self._format_config
             )
             for params in param_seq
         ]
@@ -256,7 +256,7 @@ class KsqlAsyncCursor(Cursor):
             parse_int=lambda x: x
         )
         return [
-            description.type_code.from_sql(value, self._binding_config)
+            description.type_code.from_sql(value, self._format_config)
             for value, description in zip(row, self._description)
         ]
 
