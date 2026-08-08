@@ -90,8 +90,7 @@ SELECT * FROM user_view;
 def main() -> None:
     """Entrypoint"""
 
-    ksql.paramstyle = 'qmark'
-    conn = ksql.connect()
+    conn = ksql.connect("http://localhost:8088")
 
     drop_tables(conn)
     create_tables(conn)

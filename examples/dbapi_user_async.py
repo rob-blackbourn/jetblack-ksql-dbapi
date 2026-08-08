@@ -92,7 +92,7 @@ SELECT * FROM user_view;
 async def main() -> None:
     """Entrypoint"""
 
-    conn = ksql.connect()
+    conn = ksql.connect("http://localhost:8088")
 
     await drop_tables(conn)
     await create_tables(conn)

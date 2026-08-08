@@ -1,28 +1,3 @@
-# jetblack-ksql-dbapi
-
-A vanilla and asyncio ksql DBAPI interface for Python >= 3.12.
-
-## Status
-
-This is work in progress.
-
-## Installation
-
-The package uses either httpx or httpx2. This can either
-be installed separately or specified.
-
-```bash
-pip install jetblack-ksql-dbapi[httpx2]
-```
-
-## Usage
-
-There is a docker compose file in the scripts folder which will bring
-up a local instance of ksql.
-
-Here is an example using the async client connecting to a local instance of ksql.
-
-```python
 import asyncio
 
 import jetblack_ksql_dbapi.aio as ksql
@@ -90,4 +65,3 @@ VALUES (?, ?, ?, ?);
 
 if __name__ == "__main__":
     asyncio.run(main())
-```

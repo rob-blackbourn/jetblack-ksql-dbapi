@@ -46,7 +46,8 @@ class Connection:
     @classmethod
     def connect(
             cls,
-            url: str = "http://localhost:8088",
+            url: str,
+            *,
             api_key: str | None = None,
             api_secret: str | None = None,
             binding_config: FormatConfig | None = None,
