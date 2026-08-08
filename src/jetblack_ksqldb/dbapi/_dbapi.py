@@ -25,12 +25,13 @@ from httpx import (
 
 from .._types import QueryMetaData, create_ksql_error
 
-from ._binding import BindingConfig, bind_parameters
+from ._binding import bind_parameters
 from ._ksql_inspector import KsqlInspector
 from ._paramstyles import ParamStyle
 from ._statement_transformer import StatementStyle, StatementType
 from ._types import (
     DBAPITypeObject,
+    FormatConfig,
     STRING,
     BINARY,
     NUMBER, DATETIME,
@@ -112,7 +113,7 @@ class Connection:
     def __init__(
             self,
             client: Client,
-            binding_config: BindingConfig,
+            binding_config: FormatConfig,
     ) -> None:
         self._client = client
         self._binding_config = binding_config
@@ -124,7 +125,7 @@ class Connection:
             url: str = "http://localhost:8088",
             api_key: str | None = None,
             api_secret: str | None = None,
-            binding_config: BindingConfig | None = None,
+            binding_config: FormatConfig | None = None,
     ) -> Self:
         auth = (
             BasicAuth(api_key, api_secret)
@@ -132,7 +133,7 @@ class Connection:
             None
         )
         client = Client(base_url=url, auth=auth, http1=False, http2=True)
-        return cls(client, binding_config or BindingConfig())
+        return cls(client, binding_config or FormatConfig())
 
     def cursor(self) -> Cursor:
         return Cursor(self._client, self._binding_config, self._inspector)
@@ -143,14 +144,14 @@ class Cursor:
     def __init__(
             self,
             client: Client,
-            binding_config: BindingConfig,
+            binding_config: FormatConfig,
             inspector: KsqlInspector
     ) -> None:
         self._client = client
         self._binding_config = binding_config
         self._inspector = inspector
         self._result: Iterator | None
-        self._iter: Iterator[str] | None = None
+        self._iter: Iterator[Sequence[Any]] | None = None
         self._description: list[CursorDescription] | None = None
 
     @property
@@ -287,12 +288,26 @@ class Cursor:
 
         response.raise_for_status()
         if query_type == 'select':
-            self._iter = map(json.loads, response.iter_lines())
-            meta_data = cast(QueryMetaData, next(self._iter))
+            line_iter = response.iter_lines()
+            meta_data = cast(QueryMetaData, json.loads(next(line_iter)))
             self._description = CursorDescription.create_all(meta_data)
+            self._iter = map(self._to_row, line_iter)
         else:
             self._iter = response.iter_lines()
             self._description = None
+
+    def _to_row(self, line: str) -> Sequence[Any]:
+        assert self._iter is not None
+        assert self._description is not None
+        row = json.loads(
+            line,
+            parse_float=lambda x: x,
+            parse_int=lambda x: x
+        )
+        return [
+            description.type_code._from_str(value, self._binding_config)
+            for value, description in zip(row, self._description)
+        ]
 
     def fetchone(self) -> Sequence[Any]:
         assert self._iter is not None

@@ -95,9 +95,9 @@ def main() -> None:
     ksql.paramstyle = 'qmark'
     conn = ksql.connect()
 
-    drop_tables(conn)
-    create_tables(conn)
-    insert_data(conn)
+    # drop_tables(conn)
+    # create_tables(conn)
+    # insert_data(conn)
     # print_data(conn)
     select_all(conn)
 

@@ -4,17 +4,14 @@ from datetime import date, datetime
 from decimal import Decimal
 from typing import Any, Mapping, NamedTuple, cast
 
-from ._exceptions import ProgrammingError
-from ._paramstyles import ParamStyle, convert
 from .._utils import classname
 
+from ._exceptions import ProgrammingError
+from ._paramstyles import ParamStyle, convert
+from ._types import FormatConfig
 
-class BindingConfig(NamedTuple):
-    format_datetime: Callable[[datetime], str] = datetime.isoformat
-    format_date: Callable[[date], str] = date.isoformat
 
-
-_DEFAULT_BINDING_CONFIG = BindingConfig()
+_DEFAULT_BINDING_CONFIG = FormatConfig()
 
 
 def raise_if_not_type(value: Any, type_: type | tuple[type]) -> bool:
@@ -33,7 +30,7 @@ _ESCAPE_TABLE[ord('"')] = '\\"'
 _ESCAPE_TABLE[ord("'")] = "\\'"
 
 
-def escape_parameter(parameter: Any, config: BindingConfig) -> str:
+def escape_parameter(parameter: Any, config: FormatConfig) -> str:
 
     if isinstance(parameter, str):
         return "'%s'" % parameter.translate(_ESCAPE_TABLE)
@@ -59,10 +56,10 @@ def escape_parameter(parameter: Any, config: BindingConfig) -> str:
         return "true" if parameter else "false"
 
     elif isinstance(parameter, datetime):
-        return config.format_datetime(parameter)
+        return config.datetime_to_str(parameter)
 
     elif isinstance(parameter, date):
-        return config.format_date(parameter)
+        return config.date_to_str(parameter)
 
     elif isinstance(parameter, dict):
         args = ", ".join(
@@ -84,7 +81,7 @@ def escape_parameter(parameter: Any, config: BindingConfig) -> str:
 
 def escape_parameter_sequence(
         parameters: Sequence[Any],
-        config: BindingConfig | None
+        config: FormatConfig | None
 ) -> Sequence[str]:
     if config is None:
         config = _DEFAULT_BINDING_CONFIG
@@ -96,7 +93,7 @@ def escape_parameter_sequence(
 
 def escape_parameter_dict(
         parameters: Mapping[str, Any],
-        config: BindingConfig | None
+        config: FormatConfig | None
 ) -> dict[str, str]:
     if config is None:
         config = _DEFAULT_BINDING_CONFIG
@@ -111,7 +108,7 @@ def bind_parameters_sequence(
         query: str,
         params: Sequence[Any],
         param_style: ParamStyle,
-        config: BindingConfig
+        config: FormatConfig
 ) -> str:
     match param_style:
 
@@ -136,7 +133,7 @@ def bind_parameters_dict(
         query: str,
         params: Mapping[str, Any],
         param_style: ParamStyle,
-        config: BindingConfig
+        config: FormatConfig
 ) -> str:
     match param_style:
 
@@ -161,7 +158,7 @@ def bind_parameters(
         query: str,
         params: Sequence[Any] | Mapping[str, Any] | None,
         param_style: ParamStyle,
-        config: BindingConfig
+        config: FormatConfig
 ) -> str:
     if params is None:
         return query
