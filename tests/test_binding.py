@@ -1,8 +1,8 @@
 from datetime import date, datetime
 
 from jetblack_ksql_dbapi._binding import (
-    escape_parameter_sequence,
-    escape_parameter_dict,
+    _escape_parameter_sequence,
+    _escape_parameter_dict,
 )
 
 
@@ -14,7 +14,7 @@ def test_sequence_scalar() -> None:
         date(1967, 12, 8),
         datetime(2026, 3, 22, 12, 15, 5)
     )
-    actual = escape_parameter_sequence(params, None)
+    actual = _escape_parameter_sequence(params, None)
     expected = (
         "'a'",
         "42",
@@ -30,7 +30,7 @@ def test_sequence_array() -> None:
         [1, 2, 3],
         ['a', 'b', 'c']
     )
-    actual = escape_parameter_sequence(params, None)
+    actual = _escape_parameter_sequence(params, None)
     expected = (
         "ARRAY[1, 2, 3]",
         "ARRAY['a', 'b', 'c']",
@@ -43,7 +43,7 @@ def test_sequence_struct() -> None:
         {'one': 1, 'two': 2, 'three': 3},
         {'a': 'A', 'b': 'B', 'c': 'C'}
     )
-    actual = escape_parameter_sequence(params, None)
+    actual = _escape_parameter_sequence(params, None)
     expected = (
         "STRUCT(one := 1, two := 2, three := 3)",
         "STRUCT(a := 'A', b := 'B', c := 'C')",
@@ -59,7 +59,7 @@ def test_dict_parameters() -> None:
         'fourth': date(1967, 12, 8),
         'fifth': datetime(2026, 3, 22, 12, 15, 5)
     }
-    actual = escape_parameter_dict(params, None)
+    actual = _escape_parameter_dict(params, None)
     expected = {
         "first": "'a'",
         "second": "42",

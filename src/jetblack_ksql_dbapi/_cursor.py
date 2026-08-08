@@ -11,23 +11,23 @@ from typing import (
 )
 
 try:
-    import httpx # type: ignore
-    from httpx import ( # type: ignore
+    import httpx  # type: ignore
+    from httpx import (  # type: ignore
         Client,
         HTTPStatusError,
         Timeout,
         USE_CLIENT_DEFAULT,
     )
 except ModuleNotFoundError:
-    import httpx2 as httpx # type: ignore
-    from httpx2 import ( # type: ignore
+    import httpx2 as httpx  # type: ignore
+    from httpx2 import (  # type: ignore
         Client,
         HTTPStatusError,
         Timeout,
         USE_CLIENT_DEFAULT,
     )
 
-from ._binding import bind_parameters
+from ._binding import bind
 from ._description import Description
 from ._exceptions import Error, NotSupportedError
 from ._ksql_inspector import KsqlInspector
@@ -44,6 +44,7 @@ CONTENT_TYPE_DELIMITED = "application/vnd.ksqlapi.delimited.v1"
 
 
 class Cursor:
+    """A PEP-294 compliant cursor class"""
 
     def __init__(
             self,
@@ -51,7 +52,7 @@ class Cursor:
             binding_config: FormatConfig,
             inspector: KsqlInspector,
             paramstyle: ParamStyle,
-            close_timeout: float = 1.0,
+            close_timeout: float,
     ) -> None:
         self._client = client
         self._binding_config = binding_config
@@ -105,7 +106,7 @@ class Cursor:
             params: Sequence[Any] | Mapping[str, Any] | None = None
     ) -> None:
         if params:
-            bound_query = bind_parameters(
+            bound_query = bind(
                 query,
                 params,
                 self._paramstyle,
@@ -134,7 +135,7 @@ class Cursor:
             raise ValueError("Must have params")
 
         bound_queries = [
-            bind_parameters(
+            bind(
                 query,
                 args,
                 self._paramstyle,
@@ -245,7 +246,7 @@ class Cursor:
             parse_int=lambda x: x
         )
         return [
-            description.type_code._from_str(value, self._binding_config)
+            description.type_code.from_sql(value, self._binding_config)
             for value, description in zip(row, self._description)
         ]
 

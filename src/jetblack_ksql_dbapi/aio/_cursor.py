@@ -11,23 +11,23 @@ from typing import (
 )
 
 try:
-    import httpx # type: ignore
-    from httpx import ( # type: ignore
+    import httpx  # type: ignore
+    from httpx import (  # type: ignore
         AsyncClient,
         HTTPStatusError,
         Timeout,
         USE_CLIENT_DEFAULT,
     )
 except ModuleNotFoundError:
-    import httpx2 as httpx # type: ignore
-    from httpx2 import ( # type: ignore
+    import httpx2 as httpx  # type: ignore
+    from httpx2 import (  # type: ignore
         AsyncClient,
         HTTPStatusError,
         Timeout,
         USE_CLIENT_DEFAULT,
     )
 
-from .._binding import bind_parameters
+from .._binding import bind
 from .._description import Description
 from .._exceptions import Error, NotSupportedError
 from .._ksql_inspector import KsqlInspector
@@ -105,7 +105,7 @@ class Cursor:
             params: Sequence[Any] | Mapping[str, Any] | None = None
     ) -> None:
         if params:
-            bound_query = bind_parameters(
+            bound_query = bind(
                 query,
                 params,
                 self._paramstyle,
@@ -134,7 +134,7 @@ class Cursor:
             raise ValueError("Must have params")
 
         bound_queries = [
-            bind_parameters(
+            bind(
                 query,
                 args,
                 self._paramstyle,
@@ -245,7 +245,7 @@ class Cursor:
             parse_int=lambda x: x
         )
         return [
-            description.type_code._from_str(value, self._binding_config)
+            description.type_code.from_sql(value, self._binding_config)
             for value, description in zip(row, self._description)
         ]
 

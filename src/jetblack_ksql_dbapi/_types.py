@@ -81,25 +81,25 @@ class DBAPITypeObject[T]:
             from_sql: Callable[[str, FormatConfig], T],
             to_sql: Callable[[T, FormatConfig], str]
     ) -> None:
-        self._name = name
-        self._types = set(types)
-        self._from_str = from_sql
-        self._to_sql = to_sql
+        self.name = name
+        self.types = set(types)
+        self.from_sql = from_sql
+        self.to_sql = to_sql
 
     def __hash__(self) -> int:
-        return hash(self._name)
+        return hash(self.name)
 
     def __repr__(self) -> str:
-        return f"DBAPITypeObject({self._name!r}, {self._types!r})"
+        return f"DBAPITypeObject({self.name!r}, {self.types!r})"
 
     def __str__(self) -> str:
-        return self._name
+        return self.name
 
     def __eq__(self, other: object) -> bool:
         if isinstance(other, DBAPITypeObject):
-            return self._name == other._name
+            return self.name == other.name
         else:
-            return other in self._types
+            return other in self.types
 
 
 _ESCAPE_TABLE = [chr(x) for x in range(128)]
@@ -318,6 +318,6 @@ def to_sql(parameter: Any, config: FormatConfig) -> str:
     else:
         py_type = type(parameter)
         if py_type in _PY_TYPE_MAP:
-            return _PY_TYPE_MAP[py_type]._to_sql(parameter, config)
+            return _PY_TYPE_MAP[py_type].to_sql(parameter, config)
         else:
             raise TypeError(f"Type {py_type} not supported: {parameter}")

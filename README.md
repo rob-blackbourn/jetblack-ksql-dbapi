@@ -1,6 +1,7 @@
 # jetblack-ksql-dbapi
 
-A vanilla and asyncio ksql DBAPI interface for Python >= 3.12.
+A vanilla and asyncio [ksql](https://www.confluent.io/product/ksqldb/)
+[DBAPI](https://peps.python.org/pep-0249/) interface for Python >= 3.12.
 
 ## Status
 
