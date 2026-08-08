@@ -29,7 +29,7 @@ except ModuleNotFoundError:
 
 from ._binding import bind
 from ._description import Description
-from ._exceptions import Error, NotSupportedError
+from ._exceptions import Error, NotSupportedError, ProgrammingError
 from ._ksql_inspector import KsqlInspector
 from ._ksql_types import QueryMetaData, create_ksql_error
 from ._paramstyles import ParamStyle
@@ -66,20 +66,46 @@ class Cursor:
         self.arraysize: int = 1
 
     @property
-    def description(self) -> list[Description] | None:
+    def description(self) -> Sequence[Description] | None:
+        """A description of the data returned by the last invocation, if any.
+
+        Returns:
+            Sequence[Description] | None: A sequence of the column descriptions.
+        """
         return self._description
 
     @property
     def rowcount(self) -> int:
+        """The number of rows effected by the last invocation, if known.
+
+        This is currently not supported.
+
+        Returns:
+            int: The number of rows, or -1 if not known.
+        """
         # TODO: There can only be a rowcount for "pull" queries. We could detect
         # this in the parser. Then we would need to fetch all the rows and wrap
         # the result iterator.
         return -1
 
     def callproc(self, procname: str, parameters: Sequence[Any] | None = None) -> None:
+        """Call a stored database procedure with the given name.
+
+        Args:
+            procname (str): The procedure name
+            parameters (Sequence[Any] | None, optional): The parameters of the procedure. Defaults to None.
+
+        Raises:
+            NotSupportedError: The ksql database does not support this.
+        """
         raise NotSupportedError("ksql does not support stored procedures")
 
     def close(self) -> None:
+        """Close a running cursor.
+
+        Raises:
+            Error: If the close fails.
+        """
         if self._query_id is None:
             return
 
@@ -105,15 +131,19 @@ class Cursor:
             query: str,
             params: Sequence[Any] | Mapping[str, Any] | None = None
     ) -> None:
-        if params:
-            bound_query = bind(
-                query,
-                params,
-                self._paramstyle,
-                self._binding_config
-            )
-        else:
-            bound_query = query
+        """Prepare and execute a database operation (query or command).
+
+        Args:
+            query (str): The query or command to execute.
+            params (Sequence[Any] | Mapping[str, Any] | None, optional):
+                Optional parameters to bind to variables. Defaults to None.
+        """
+        bound_query = bind(
+            query,
+            params,
+            self._paramstyle,
+            self._binding_config
+        )
 
         statement_tuple = self._inspector.find_statement_type(bound_query)
 
@@ -129,10 +159,24 @@ class Cursor:
     def executemany(
             self,
             query: str,
-            params: Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]
+            seq_of_parameters: Sequence[Sequence[Any]
+                                        ] | Sequence[Mapping[str, Any]]
     ) -> None:
-        if len(params) == 0:
-            raise ValueError("Must have params")
+        """Prepare a database operation (query or command) and then execute it
+        against all parameter sequences or mappings found in the sequence
+        seq_of_parameters.
+
+        Args:
+            query (str): The command.
+            params (Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]): A sequence of parameters to bind.
+
+        Raises:
+            ProgrammingError: If the sequence of parameters are empty, or the
+               statement is not a command.
+            ValueError: _description_
+        """
+        if len(seq_of_parameters) == 0:
+            raise ProgrammingError("Must have params")
 
         bound_queries = [
             bind(
@@ -141,13 +185,13 @@ class Cursor:
                 self._paramstyle,
                 self._binding_config
             )
-            for args in params
+            for args in seq_of_parameters
         ]
 
         (statement_style, _) = self._inspector.find_statement_type(
             bound_queries[0])
         if statement_style != StatementStyle.COMMAND:
-            raise ValueError("Expected a command")
+            raise ProgrammingError("Expected a command")
 
         ksql = "".join(bound_queries)
         self._ksql(ksql)
@@ -250,28 +294,73 @@ class Cursor:
             for value, description in zip(row, self._description)
         ]
 
-    def fetchone(self) -> Sequence[Any]:
+    def fetchone(self) -> Sequence[Any] | None:
+        """Fetch the next row of a query result set, returning a single sequence, or None when no more data is available.
+
+        Raises:
+            Error: If no results are available.
+
+        Returns:
+            Sequence[Any]: _description_
+        """
         if self._iter is None:
             raise Error("No results available")
 
-        return next(self._iter)
+        return next(self._iter, None)
 
     def fetchmany(self, size: int | None = None) -> Sequence[Sequence[Any]]:
+        """Fetch the next set of rows of a query result, returning a sequence of sequences (e.g. a list of tuples). An empty sequence is returned when no more rows are available.
+
+        Args:
+            size (int | None, optional): The maximum number of rows to fetch. Defaults to None.
+
+        Raises:
+            Error: If no results are available.
+
+        Returns:
+            Sequence[Sequence[Any]]: A sequence of rows.
+        """
         if self._iter is None:
             raise Error("No results available")
 
         if size is None:
             size = self.arraysize
 
-        return [next(self._iter) for _ in range(size)]
+        rows = []
+        while size > 0:
+            try:
+                rows.append(next(self._iter))
+            except StopIteration:
+                break
+            size -= 1
+
+        return rows
 
     def fetchall(self) -> Sequence[Sequence[Any]]:
+        """Fetch all (remaining) rows of a query result, returning them as a
+        sequence of sequences (e.g. a list of tuples). Note that the cursor's
+        arraysize attribute can affect the performance of this operation.
+
+        Raises:
+            Error: If there are no results.
+
+        Returns:
+            Sequence[Sequence[Any]]: A sequence of the rows.
+        """
         if self._iter is None:
             raise Error("No results available")
 
         return list(self._iter)
 
     def nextset(self) -> bool | None:
+        """This method will make the cursor skip to the next available set,
+        discarding any remaining rows from the current set.
+
+        Returns:
+            bool | None:  there are no more sets, the method returns None.
+                Otherwise, it returns a true value and subsequent calls to the
+                fetch() methods will return rows from the next result set.
+        """
         return None
 
     def setinputsizes(self, sizes: Sequence[Any]) -> None:
