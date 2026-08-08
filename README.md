@@ -26,13 +26,12 @@ Here is an example using the async client connecting to a local instance of ksql
 ```python
 import asyncio
 
-import jetblack_ksql_dbapi.aio as ksql
-from jetblack_ksql_dbapi.aio import Connection
+from jetblack_ksql_dbapi.aio import connect
 
 
 async def main() -> None:
 
-    conn = ksql.connect("http://localhost:8088")
+    conn = connect("http://localhost:8088")
 
     cur = conn.cursor()
 
@@ -81,9 +80,7 @@ VALUES (?, ?, ?, ?);
         )
     )
 
-    await cur.execute(
-        "SELECT * FROM user_view;"
-    )
+    await cur.execute("SELECT * FROM user_view;")
     async for row in cur:
         print(row)
 
@@ -98,4 +95,5 @@ if __name__ == "__main__":
 * How to handle timeouts.
 * Do something useful with the output of commands like `SHOW TABLES;`
 * Handle multiple commands.
+* Tidy up cursors with multiple executions.
 
