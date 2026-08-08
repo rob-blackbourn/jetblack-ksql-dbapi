@@ -10,7 +10,7 @@ This is work in progress.
 ## Installation
 
 The package uses either httpx or httpx2. This can either
-be installed separately or specified.
+be installed separately or specified as an extra.
 
 ```bash
 pip install jetblack-ksql-dbapi[httpx2]
@@ -18,7 +18,7 @@ pip install jetblack-ksql-dbapi[httpx2]
 
 ## Usage
 
-There is a docker compose file in the scripts folder which will bring
+In the source repo there is a docker compose file in the scripts folder which will bring
 up a local instance of ksql.
 
 Here is an example using the async client connecting to a local instance of ksql.
