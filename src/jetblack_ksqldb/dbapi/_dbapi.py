@@ -1,14 +1,11 @@
 from __future__ import annotations
 
-from importlib import resources as impresources
 import json
-import re
 from typing import (
     Any,
     Iterator,
     Literal,
     Mapping,
-    NamedTuple,
     Self,
     Sequence,
     cast
@@ -26,86 +23,16 @@ from httpx import (
 from .._types import QueryMetaData, create_ksql_error
 
 from ._binding import bind_parameters
+from ._description import Description
 from ._ksql_inspector import KsqlInspector
-from ._paramstyles import ParamStyle
 from ._statement_transformer import StatementStyle, StatementType
-from ._types import (
-    DBAPITypeObject,
-    FormatConfig,
-    STRING,
-    BINARY,
-    NUMBER, DATETIME,
-    ROWID,
-    BIGINT,
-    BOOLEAN,
-    DATE,
-    DECIMAL,
-    INTEGER,
-    TIME,
-)
+from ._types import FormatConfig
 
 
 type QueryType = Literal['print', 'select']
 
 CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_DELIMITED = "application/vnd.ksqlapi.delimited.v1"
-
-_TYPE_MAP: Mapping[str, DBAPITypeObject] = {
-    'BIGINT': BIGINT,
-    'BINARY': BINARY,
-    'BOOLEAN': BOOLEAN,
-    'BYTES': BINARY,
-    'DATE': DATE,
-    'DATETIME': DATETIME,
-    'DECIMAL': DECIMAL,
-    'INT': INTEGER,
-    'INTEGER': INTEGER,
-    'NUMBER': NUMBER,
-    'ROWID': ROWID,
-    'STRING': STRING,
-    'TIME': TIME,
-    'TIMESTAMP': DATETIME,
-    'VARCHAR': STRING
-}
-
-
-class CursorDescription(NamedTuple):
-    name: str
-    type_code: DBAPITypeObject
-    display_size: int | None
-    internal_size: int | None
-    precision: int | None
-    scale: int | None
-    null_ok: bool | None
-
-    @classmethod
-    def create(cls, name: str, type: str) -> Self:
-        if type.startswith('DECIMAL('):
-            lhs, sep, rhs = type[8:-1].partition(',')
-            assert sep == ','
-            precision: int | None = int(lhs.strip())
-            scale: int | None = int(rhs.strip())
-            type = type[:7]
-        else:
-            precision = None
-            scale = None
-
-        return cls(
-            name,
-            _TYPE_MAP[type],
-            None,
-            None,
-            precision,
-            scale,
-            True
-        )
-
-    @classmethod
-    def create_all(cls, meta_data: QueryMetaData) -> list[Self]:
-        return [
-            cls.create(name, type)
-            for name, type in zip(meta_data['columnNames'], meta_data['columnTypes'])
-        ]
 
 
 class Connection:
@@ -152,10 +79,10 @@ class Cursor:
         self._inspector = inspector
         self._result: Iterator | None
         self._iter: Iterator[Sequence[Any]] | None = None
-        self._description: list[CursorDescription] | None = None
+        self._description: list[Description] | None = None
 
     @property
-    def description(self) -> list[CursorDescription] | None:
+    def description(self) -> list[Description] | None:
         return self._description
 
     def execute(
@@ -290,7 +217,7 @@ class Cursor:
         if query_type == 'select':
             line_iter = response.iter_lines()
             meta_data = cast(QueryMetaData, json.loads(next(line_iter)))
-            self._description = CursorDescription.create_all(meta_data)
+            self._description = Description.create_all(meta_data)
             self._iter = map(self._to_row, line_iter)
         else:
             self._iter = response.iter_lines()

@@ -1,6 +1,6 @@
 """jetblack-ksqldb"""
 
-from ._dbapi import Connection, Cursor, CursorDescription, connect
+from ._dbapi import Connection, Cursor, Description, connect
 from ._exceptions import (
     Warning,
     Error,
@@ -25,7 +25,7 @@ __all__ = [
     # dbapi
     'Connection',
     'Cursor',
-    'CursorDescription',
+    'Description',
     'connect',
     'paramstyle',
 
