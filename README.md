@@ -91,3 +91,11 @@ VALUES (?, ?, ?, ?);
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+
+## Things to do
+
+* Figure out what to do with the `paramstyle` global.
+* How to handle timeouts.
+* Do something useful with the output of commands like `SHOW TABLES;`
+* Handle multiple commands.
+
