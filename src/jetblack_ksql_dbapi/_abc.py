@@ -7,6 +7,7 @@ from ._description import Description
 
 
 class Cursor(metaclass=ABCMeta):
+    """A PEP-294 compliant cursor class"""
 
     @property
     @abstractmethod
@@ -138,7 +139,10 @@ class Cursor(metaclass=ABCMeta):
 
 
 class Connection(metaclass=ABCMeta):
-    """A PEP-294 compliant connection class"""
+    """A PEP-294 compliant connection class.
+
+    See: [Connection Objects](https://peps.python.org/pep-0249/#connection-objects)
+    """
 
     @abstractmethod
     def cursor(self) -> Cursor:

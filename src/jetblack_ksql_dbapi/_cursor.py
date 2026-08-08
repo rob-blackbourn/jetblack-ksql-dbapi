@@ -1,4 +1,4 @@
-from __future__ import annotations
+"""A cursor class for ksql"""
 
 import json
 from typing import (

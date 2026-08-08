@@ -7,6 +7,10 @@ from .._description import Description
 
 
 class Cursor(metaclass=ABCMeta):
+    """A PEP-294 style cursor class.
+
+    Note: there is no actual specification for an asyncio cursor.
+    """
 
     @property
     @abstractmethod
@@ -138,7 +142,10 @@ class Cursor(metaclass=ABCMeta):
 
 
 class Connection(metaclass=ABCMeta):
-    """A PEP-294 compliant connection class"""
+    """A PEP-294 style connection class.
+
+    Note: there is no actual specification for an asyncio connection.
+    """
 
     @abstractmethod
     def cursor(self) -> Cursor:

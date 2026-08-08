@@ -1,7 +1,4 @@
-"""The connection class
-
-See: [Connection Objects](https://peps.python.org/pep-0249/#connection-objects)
-"""
+"""A connection class fort ksql"""
 
 from typing import (
     Literal,
@@ -32,7 +29,7 @@ type QueryType = Literal['print', 'select']
 
 
 class KsqlSyncConnection(Connection):
-    """A PEP-294 compliant connection class"""
+    """A ksql connection class"""
 
     def __init__(
             self,
