@@ -1,6 +1,8 @@
 """jetblack-ksqldb"""
 
-from ._dbapi import Connection, Cursor, Description, connect
+from ._connection import Connection, connect
+from ._cursor import Cursor
+from ._description import Description
 from ._exceptions import (
     Warning,
     Error,
@@ -35,12 +37,20 @@ paramstyle: ParamStyle = "pyformat"
 
 __all__ = [
 
+    # .
+    'apilevel',
+    'threadsafety',
+    'paramstyle',
+
     # dbapi
     'Connection',
-    'Cursor',
-    'Description',
     'connect',
-    'paramstyle',
+
+    # .cursor
+    'Cursor',
+
+    # .description
+    'Description',
 
     # exceptions
     'Warning',
