@@ -3,6 +3,6 @@
 from ._ksql_client_async import AsyncKsqlDbClient
 
 __all__ = [
-    # client
+    # _ksql_client_async
     'AsyncKsqlDbClient',
 ]
