@@ -1,4 +1,8 @@
-"""Abstract implementations of the DBAPI objects"""
+"""Abstract implementations of the DBAPI objects.
+
+By presenting the objects as abstract classes the underlying complexity is
+hidden.
+"""
 
 from abc import ABCMeta, abstractmethod
 from typing import Any, Iterator, Mapping, Sequence

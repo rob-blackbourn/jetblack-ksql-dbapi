@@ -1,7 +1,6 @@
-"""Code for binding parameters to queries
+"""Code for binding parameters to queries.
 
 All paramstyles are supported.
-paramstyle	Meaning
 
 | paramstyle | Description                                               |
 | ---------- | --------------------------------------------------------- |

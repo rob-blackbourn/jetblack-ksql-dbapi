@@ -1,3 +1,5 @@
+"""DBAPI types."""
+
 from base64 import b64encode
 from datetime import date, datetime, time
 from decimal import Decimal

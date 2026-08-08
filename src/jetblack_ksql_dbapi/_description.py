@@ -1,3 +1,5 @@
+"""The cursor description class"""
+
 from typing import Mapping, NamedTuple, Self
 
 from ._ksql_types import QueryMetaData

@@ -1,4 +1,4 @@
-"""A connection class fort ksql"""
+"""A connection class for ksql"""
 
 from typing import (
     Literal,

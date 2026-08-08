@@ -1,3 +1,5 @@
+"""Exceptions specified by the DBAPI spec"""
+
 from builtins import Warning
 
 

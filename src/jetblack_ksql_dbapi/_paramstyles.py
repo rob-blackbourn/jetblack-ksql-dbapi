@@ -1,3 +1,5 @@
+"""Param style handling"""
+
 import re
 from typing import Any, Callable, Literal, Mapping, Sequence, cast
 

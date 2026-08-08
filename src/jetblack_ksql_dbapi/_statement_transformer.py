@@ -1,3 +1,5 @@
+"""A lark transformer for ksql statements."""
+
 from enum import Enum, auto
 from typing import Any, Sequence, TypeGuard
 
