@@ -1,6 +1,6 @@
 from typing import Mapping, NamedTuple, Self
 
-from .._ksql_types import QueryMetaData
+from ._ksql_types import QueryMetaData
 
 from ._types import (
     DBAPITypeObject,

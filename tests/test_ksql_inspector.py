@@ -1,4 +1,4 @@
-from jetblack_ksql_dbapi.dbapi._ksql_inspector import (
+from jetblack_ksql_dbapi._ksql_inspector import (
     KsqlInspector,
     StatementStyle,
     StatementType
