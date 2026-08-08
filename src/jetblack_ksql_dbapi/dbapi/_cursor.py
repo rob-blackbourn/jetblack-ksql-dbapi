@@ -21,7 +21,7 @@ from httpx import (
 from jetblack_ksql_dbapi.dbapi._exceptions import NotSupportedError
 from jetblack_ksql_dbapi.dbapi._paramstyles import ParamStyle
 
-from .._types import QueryMetaData, create_ksql_error
+from .._ksql_types import QueryMetaData, create_ksql_error
 
 from ._binding import bind_parameters
 from ._description import Description

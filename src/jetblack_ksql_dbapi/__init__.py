@@ -1,6 +1,6 @@
 """jetblack-ksqldb"""
 
-from ._client_async import AsyncKsqlDbClient
+from ._ksql_client_async import AsyncKsqlDbClient
 
 __all__ = [
     # client
