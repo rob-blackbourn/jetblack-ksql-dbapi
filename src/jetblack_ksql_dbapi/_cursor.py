@@ -53,7 +53,7 @@ class KsqlSyncCursor(Cursor):
             binding_config: FormatConfig,
             inspector: KsqlInspector,
             paramstyle: ParamStyle,
-            close_timeout: float,
+            close_timeout: float | None,
     ) -> None:
         self._client = client
         self._binding_config = binding_config

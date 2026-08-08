@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import json
 from typing import (
     Any,
@@ -53,7 +51,7 @@ class KsqlAsyncCursor(Cursor):
             binding_config: FormatConfig,
             inspector: KsqlInspector,
             paramstyle: ParamStyle,
-            close_timeout: float = 1.0,
+            close_timeout: float | None,
     ) -> None:
         self._client = client
         self._binding_config = binding_config

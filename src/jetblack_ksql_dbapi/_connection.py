@@ -36,7 +36,7 @@ class KsqlSyncConnection(Connection):
             client: Client,
             format_config: FormatConfig,
             paramstyle: ParamStyle,
-            close_timeout: float,
+            close_timeout: float | None,
     ) -> None:
         self._client = client
         self._format_config = format_config
@@ -53,7 +53,7 @@ class KsqlSyncConnection(Connection):
             api_secret: str | None = None,
             format_config: FormatConfig | None = None,
             paramstyle: ParamStyle = "qmark",
-            close_timeout: float = 1.0
+            close_timeout: float | None = None
     ) -> Self:
         """Connect to the database.
 
@@ -67,7 +67,7 @@ class KsqlSyncConnection(Connection):
                 configuration. Defaults to None.
             paramstyle (ParamStyle, optional): The param style. Defaults to
                 "qmark".
-            close_timeout (float, optional): The close timeout. Defaults to 1.0.
+            close_timeout (float | None, optional): The close timeout. Defaults to None.
 
         Returns:
             Self: A connection object.
