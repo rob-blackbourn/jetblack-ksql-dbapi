@@ -276,7 +276,7 @@ class Cursor:
     def setinputsizes(self, sizes: Sequence[Any]) -> None:
         pass
 
-    async def __aiter__(self) -> AsyncIterator[Sequence[Any]]:
+    def __aiter__(self) -> AsyncIterator[Sequence[Any]]:
         if self._iter is None:
             raise Error("No results available")
 

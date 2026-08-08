@@ -1,28 +1,30 @@
-import jetblack_ksql_dbapi as ksql
-from jetblack_ksql_dbapi import Connection
+import asyncio
+
+import jetblack_ksql_dbapi.aio as ksql
+from jetblack_ksql_dbapi.aio import Connection
 
 
-def drop_tables(conn: Connection) -> None:
+async def drop_tables(conn: Connection) -> None:
 
     cur = conn.cursor()
 
-    cur.execute(
+    await cur.execute(
         """\
 DROP TABLE IF EXISTS user_view DELETE TOPIC;
 """
     )
 
-    cur.execute(
+    await cur.execute(
         """\
 DROP TABLE IF EXISTS user DELETE TOPIC;
 """
     )
 
 
-def create_tables(conn: Connection) -> None:
+async def create_tables(conn: Connection) -> None:
     cur = conn.cursor()
 
-    cur.execute(
+    await cur.execute(
         """\
 CREATE TABLE user
 (
@@ -39,17 +41,17 @@ CREATE TABLE user
 """
     )
 
-    cur.execute(
+    await cur.execute(
         """\
 CREATE TABLE user_view AS SELECT * FROM user;
 """
     )
 
 
-def insert_data(conn: Connection) -> None:
+async def insert_data(conn: Connection) -> None:
     cur = conn.cursor()
 
-    cur.executemany(
+    await cur.executemany(
         """\
 INSERT INTO user(user_id, username, created, age) VALUES (?, ?, ?, ?);
 """,
@@ -61,47 +63,46 @@ INSERT INTO user(user_id, username, created, age) VALUES (?, ?, ?, ?);
     )
 
 
-def print_data(conn: Connection) -> None:
+async def print_data(conn: Connection) -> None:
     cur = conn.cursor()
 
-    cur.execute(
+    await cur.execute(
         """\
 PRINT user FROM BEGINNING;
 """
     )
 
-    for row in cur:
+    async for row in cur:
         print(row)
 
 
-def select_all(conn: Connection) -> None:
+async def select_all(conn: Connection) -> None:
     cur = conn.cursor()
 
-    cur.execute(
+    await cur.execute(
         """\
 SELECT * FROM user_view;
 """
     )
 
-    for row in cur.fetchall():
+    for row in await cur.fetchall():
         print(row)
 
 
-def main() -> None:
+async def main() -> None:
     """Entrypoint"""
 
-    ksql.paramstyle = 'qmark'
     conn = ksql.connect()
 
-    drop_tables(conn)
-    create_tables(conn)
-    insert_data(conn)
-    # print_data(conn)
-    select_all(conn)
+    await drop_tables(conn)
+    await create_tables(conn)
+    await insert_data(conn)
+    # await print_data(conn)
+    await select_all(conn)
 
     # cur = conn.cursor()
     # cur.execute("DESCRIBE user;")
 
 
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())
