@@ -1,7 +1,7 @@
 import asyncio
 
-import jetblack_ksql_dbapi.dbapi as ksql
-from jetblack_ksql_dbapi.dbapi import Connection
+import jetblack_ksql_dbapi as ksql
+from jetblack_ksql_dbapi import Connection
 
 
 def drop_tables(conn: Connection) -> None:
