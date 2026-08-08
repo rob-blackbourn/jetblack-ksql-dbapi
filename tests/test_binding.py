@@ -20,7 +20,7 @@ def test_sequence_scalar() -> None:
         "42",
         "3.14e0",
         "1967-12-08",
-        "2026-03-22T12:15:05"
+        "2026-03-22T12:15:05.000"
     )
     assert actual == expected
 
@@ -65,6 +65,6 @@ def test_dict_parameters() -> None:
         "second": "42",
         "third": "3.14e0",
         "fourth": "1967-12-08",
-        "fifth": "2026-03-22T12:15:05"
+        "fifth": "2026-03-22T12:15:05.000"
     }
     assert actual == expected
