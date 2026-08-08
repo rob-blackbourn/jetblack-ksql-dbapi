@@ -1,6 +1,6 @@
 [project]
 name = "jetblack-ksql-dbapi"
-version = "0.1.0"
+version = "0.2.0"
 description = "A vanilla and asyncio DBAPI interface for ksql"
 authors = [{name = "Rob Blackbourn", email = "rob.blackbourn@gmail.com"}]
 readme = "README.md"
@@ -30,7 +30,6 @@ Issues = "https://github.com/rob-blackbourn/jetblack-ksql-dbapi/issues"
 [build-system]
 requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
-
 
 # pylint
 [tool.pylint.main]
@@ -66,7 +65,7 @@ asyncio_default_test_loop_scope = "function"
 
 # mypy
 [tool.mypy]
-files = [ "src/jetblack_ksqldb", "tests", "examples" ]
+files = [ "src/jetblack_ksql_dbapi", "tests", "examples" ]
 
 [[tool.mypy.overrides]]
 module = "pytest"
