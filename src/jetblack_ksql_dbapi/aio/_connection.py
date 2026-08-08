@@ -1,27 +1,26 @@
 from __future__ import annotations
 
-from typing import (
-    Literal,
-    Self,
-)
+from typing import Literal
 
 try:
-    from httpx import ( # type: ignore
+    from httpx import (  # type: ignore
         AsyncClient,
         BasicAuth
     )
 except ModuleNotFoundError:
-    from httpx2 import ( # type: ignore
+    from httpx2 import (  # type: ignore
         AsyncClient,
         BasicAuth
     )
 
 from .._paramstyles import ParamStyle
 
-from ._cursor import Cursor
+from ._cursor import KsqlAsyncCursor
 from .._exceptions import Error
 from .._ksql_inspector import KsqlInspector
 from .._types import FormatConfig
+
+from ._abc import Connection, Cursor
 
 
 type QueryType = Literal['print', 'select']
@@ -30,7 +29,8 @@ CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_DELIMITED = "application/vnd.ksqlapi.delimited.v1"
 
 
-class Connection:
+class KsqlAsyncConnection(Connection):
+    """An async ksql connection"""
 
     def __init__(
             self,
@@ -52,7 +52,7 @@ class Connection:
             api_secret: str | None = None,
             binding_config: FormatConfig | None = None,
             paramstyle: ParamStyle = "qmark"
-    ) -> Self:
+    ) -> Connection:
         auth = (
             BasicAuth(api_key, api_secret)
             if api_key and api_secret else
@@ -65,16 +65,16 @@ class Connection:
         if self._client.is_closed:
             raise Error("Connection is closed")
 
-        return Cursor(self._client, self._binding_config, self._inspector, paramstyle=self._paramstyle)
+        return KsqlAsyncCursor(self._client, self._binding_config, self._inspector, paramstyle=self._paramstyle)
 
     async def close(self) -> None:
         await self._client.aclose()
 
-    def commit(self) -> None:
+    async def commit(self) -> None:
         raise Error("ksql does not support transactions")
 
-    def rollback(self) -> None:
+    async def rollback(self) -> None:
         raise Error("ksql does not support transactions")
 
 
-connect = Connection.connect
+connect = KsqlAsyncConnection.connect

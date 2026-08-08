@@ -36,6 +36,7 @@ from .._paramstyles import ParamStyle
 from .._statement_transformer import StatementStyle, StatementType
 from .._types import FormatConfig
 
+from ._abc import Cursor
 
 type QueryType = Literal['print', 'select']
 
@@ -43,7 +44,8 @@ CONTENT_TYPE_JSON = "application/vnd.ksql.v1+json"
 CONTENT_TYPE_DELIMITED = "application/vnd.ksqlapi.delimited.v1"
 
 
-class Cursor:
+class KsqlAsyncCursor(Cursor):
+    """An async ksql cursor."""
 
     def __init__(
             self,
@@ -75,7 +77,7 @@ class Cursor:
         # the result iterator.
         return -1
 
-    def callproc(self, procname: str, parameters: Sequence[Any] | None = None) -> None:
+    async def callproc(self, procname: str, parameters: Sequence[Any] | None = None) -> None:
         raise NotSupportedError("ksql does not support stored procedures")
 
     async def close(self) -> None:
@@ -128,19 +130,19 @@ class Cursor:
     async def executemany(
             self,
             query: str,
-            params: Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]
+            param_seq: Sequence[Sequence[Any]] | Sequence[Mapping[str, Any]]
     ) -> None:
-        if len(params) == 0:
+        if len(param_seq) == 0:
             raise ValueError("Must have params")
 
         bound_queries = [
             bind(
                 query,
-                args,
+                params,
                 self._paramstyle,
                 self._binding_config
             )
-            for args in params
+            for params in param_seq
         ]
 
         (statement_style, _) = self._inspector.find_statement_type(
@@ -270,11 +272,8 @@ class Cursor:
 
         return [row async for row in self._iter]
 
-    def nextset(self) -> bool | None:
+    async def nextset(self) -> bool | None:
         return None
-
-    def setinputsizes(self, sizes: Sequence[Any]) -> None:
-        pass
 
     def __aiter__(self) -> AsyncIterator[Sequence[Any]]:
         if self._iter is None:

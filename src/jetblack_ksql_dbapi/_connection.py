@@ -21,7 +21,8 @@ except ModuleNotFoundError:
 
 from jetblack_ksql_dbapi._paramstyles import ParamStyle
 
-from ._cursor import Cursor
+from ._abc import Connection, Cursor
+from ._cursor import KsqlSyncCursor
 from ._exceptions import Error
 from ._ksql_inspector import KsqlInspector
 from ._types import FormatConfig
@@ -30,7 +31,7 @@ from ._types import FormatConfig
 type QueryType = Literal['print', 'select']
 
 
-class Connection:
+class KsqlSyncConnection(Connection):
     """A PEP-294 compliant connection class"""
 
     def __init__(
@@ -49,7 +50,7 @@ class Connection:
     @classmethod
     def connect(
             cls,
-            url: str = "http://localhost:8088",
+            url: str,
             *,
             api_key: str | None = None,
             api_secret: str | None = None,
@@ -57,6 +58,23 @@ class Connection:
             paramstyle: ParamStyle = "qmark",
             close_timeout: float = 1.0
     ) -> Self:
+        """Connect to the database.
+
+        Args:
+            url (_type_): The connection url.
+            api_key (str | None, optional): An optional API key. Defaults to
+                None.
+            api_secret (str | None, optional): An optional API secret. Defaults
+                to None.
+            format_config (FormatConfig | None, optional): Optional format
+                configuration. Defaults to None.
+            paramstyle (ParamStyle, optional): The param style. Defaults to
+                "qmark".
+            close_timeout (float, optional): The close timeout. Defaults to 1.0.
+
+        Returns:
+            Self: A connection object.
+        """
         auth = (
             BasicAuth(api_key, api_secret)
             if api_key and api_secret else
@@ -74,7 +92,7 @@ class Connection:
         if self._client.is_closed:
             raise Error("Connection is closed")
 
-        return Cursor(
+        return KsqlSyncCursor(
             self._client,
             self._format_config,
             self._inspector,
@@ -92,4 +110,4 @@ class Connection:
         raise Error("ksql does not support transactions")
 
 
-connect = Connection.connect
+connect = KsqlSyncConnection.connect

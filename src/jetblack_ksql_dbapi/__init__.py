@@ -1,11 +1,11 @@
-"""jetblack-ksql-dbapi"""
+"""jetblack_ksql_dbapi"""
 
 from ._ksql_client_async import AsyncKsqlDbClient
 
-from ._connection import Connection, connect
-from ._cursor import Cursor
+from ._abc import Connection, Cursor
+from ._connection import connect
 from ._description import Description
-from ._exceptions import (
+from ._exceptions import (  # pylint: disable=redefined-builtin
     Warning,
     Error,
     InterfaceError,
@@ -16,6 +16,11 @@ from ._exceptions import (
     InternalError,
     ProgrammingError,
     NotSupportedError,
+)
+from ._globals import (
+    apilevel,
+    paramstyle,
+    threadsafety
 )
 from ._paramstyles import ParamStyle
 from ._types import (
@@ -32,26 +37,17 @@ from ._types import (
     TIME,
 )
 
-# DBAPI compliance
-apilevel = "2.0"
-threadsafety = 2
-paramstyle: ParamStyle = "pyformat"
 
 __all__ = [
     # _ksql_client_async
     'AsyncKsqlDbClient',
 
-    # .
-    'apilevel',
-    'threadsafety',
-    'paramstyle',
-
-    # dbapi
+    # ._abc
     'Connection',
-    'connect',
-
-    # .cursor
     'Cursor',
+
+    # ._connection
+    'connect',
 
     # .description
     'Description',
@@ -67,6 +63,14 @@ __all__ = [
     'InternalError',
     'ProgrammingError',
     'NotSupportedError',
+
+    # .globals
+    'apilevel',
+    'threadsafety',
+    'paramstyle',
+
+    # ._paramstyles
+    'ParamStyle',
 
     # ._types
     'BIGINT',
