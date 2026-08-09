@@ -18,7 +18,7 @@ from jetblack_ksql_dbapi._paramstyles import ParamStyle
 from ._abc import Connection, Cursor
 from ._binding import BindConfig
 from ._cursor import KsqlSyncCursor
-from ._exceptions import Error
+from ._exceptions import Error, NotSupportedError
 from ._ksql_inspector import KsqlInspector
 from ._types import FormatConfig
 
@@ -71,7 +71,9 @@ class KsqlSyncConnection(Connection):
             if api_key and api_secret else
             None
         )
+
         client = Client(base_url=url, auth=auth, http1=False, http2=True)
+
         return cls(
             client,
             bind_config or BindConfig('qmark', FormatConfig()),
@@ -93,10 +95,10 @@ class KsqlSyncConnection(Connection):
         self._client.close()
 
     def commit(self) -> None:
-        raise Error("ksql does not support transactions")
+        raise NotSupportedError("ksql does not support transactions")
 
     def rollback(self) -> None:
-        raise Error("ksql does not support transactions")
+        raise NotSupportedError("ksql does not support transactions")
 
 
 connect = KsqlSyncConnection.connect

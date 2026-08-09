@@ -16,7 +16,7 @@ except ModuleNotFoundError:
 from .._paramstyles import ParamStyle
 
 from .._binding import BindConfig
-from .._exceptions import Error
+from .._exceptions import Error, NotSupportedError
 from .._ksql_inspector import KsqlInspector
 from .._types import FormatConfig
 
@@ -73,7 +73,9 @@ class KsqlAsyncConnection(Connection):
             if api_key and api_secret else
             None
         )
+
         client = AsyncClient(base_url=url, auth=auth, http1=False, http2=True)
+
         return cls(
             client,
             bind_config or BindConfig('qmark', FormatConfig()),
@@ -95,10 +97,10 @@ class KsqlAsyncConnection(Connection):
         await self._client.aclose()
 
     async def commit(self) -> None:
-        raise Error("ksql does not support transactions")
+        raise NotSupportedError("ksql does not support transactions")
 
     async def rollback(self) -> None:
-        raise Error("ksql does not support transactions")
+        raise NotSupportedError("ksql does not support transactions")
 
 
 connect = KsqlAsyncConnection.connect
