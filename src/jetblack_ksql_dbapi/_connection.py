@@ -1,9 +1,6 @@
 """A connection class for ksql"""
 
-from typing import (
-    Literal,
-    Self,
-)
+from typing import Literal
 
 try:
     from httpx import (  # type: ignore
@@ -40,8 +37,9 @@ class KsqlSyncConnection(Connection):
     ) -> None:
         self._client = client
         self._bind_config = bind_config
-        self._inspector = KsqlInspector()
         self._close_timeout = close_timeout
+
+        self._inspector = KsqlInspector()
 
     @classmethod
     def connect(
@@ -52,7 +50,7 @@ class KsqlSyncConnection(Connection):
             api_secret: str | None = None,
             bind_config: BindConfig | None = None,
             close_timeout: float | None = None
-    ) -> Self:
+    ) -> Connection:
         """Connect to the database.
 
         Args:
@@ -66,7 +64,7 @@ class KsqlSyncConnection(Connection):
             close_timeout (float | None, optional): The close timeout. Defaults to None.
 
         Returns:
-            Self: A connection object.
+            Connection: A connection object.
         """
         auth = (
             BasicAuth(api_key, api_secret)
