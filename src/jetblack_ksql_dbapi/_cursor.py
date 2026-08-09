@@ -34,7 +34,7 @@ from ._description import Description
 from ._exceptions import Error, NotSupportedError, ProgrammingError
 from ._ksql_inspector import KsqlInspector
 from ._ksql_types import QueryMetaData, create_ksql_error
-from ._paramstyles import ParamStyle
+from ._responses import handle_responses
 from ._statement_transformer import StatementStyle, StatementType
 
 
@@ -154,7 +154,7 @@ class KsqlSyncCursor(Cursor):
             session_variables: Mapping[str, str] | None = None,
             command_sequence_number: int | None = None,
             timeout: Timeout | None = None
-    ) -> list[Any]:
+    ) -> None:
         headers = {
             "content-type": CONTENT_TYPE_JSON
         }
@@ -175,7 +175,12 @@ class KsqlSyncCursor(Cursor):
             timeout=timeout or USE_CLIENT_DEFAULT
         )
         if response.is_success:
-            return response.json()
+            query_response = handle_responses(response.json())
+            if query_response:
+                meta_data, rows = query_response
+                self._description = Description.create_all(meta_data)
+                self._iter = iter(rows)
+            return
 
         if response.status_code == httpx.codes.BAD_REQUEST:
             error = create_ksql_error(response.json())

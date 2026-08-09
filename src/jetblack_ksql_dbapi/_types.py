@@ -281,7 +281,7 @@ TIME = DBAPITypeObject[time](
     _time_to_sql
 )
 
-_PY_TYPE_MAP: Mapping[type, DBAPITypeObject] = {
+PY_TYPE_MAP: Mapping[type, DBAPITypeObject] = {
     str: STRING,
     bytes: BINARY,
     bytearray: BINARY,
@@ -319,7 +319,7 @@ def to_sql(parameter: Any, config: FormatConfig) -> str:
         return f"STRUCT({args})"
     else:
         py_type = type(parameter)
-        if py_type in _PY_TYPE_MAP:
-            return _PY_TYPE_MAP[py_type].to_sql(parameter, config)
+        if py_type in PY_TYPE_MAP:
+            return PY_TYPE_MAP[py_type].to_sql(parameter, config)
         else:
             raise TypeError(f"Type {py_type} not supported: {parameter}")
