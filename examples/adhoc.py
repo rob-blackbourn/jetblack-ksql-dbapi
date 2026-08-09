@@ -1,23 +1,16 @@
 """Example 1"""
 
-import asyncio
-
-from jetblack_ksql_dbapi import AsyncKsqlDbClient
+import jetblack_ksql_dbapi as ksql
 
 
-async def main() -> None:
-    """Entrypoint"""
+def main() -> None:
 
-    ksqldb = AsyncKsqlDbClient()
+    conn = ksql.connect("http://localhost:8088")
 
-    info = await ksqldb.info()
-    print(info)
+    cur = conn.cursor()
 
-    healthcheck = await ksqldb.healthcheck()
-    print(healthcheck)
+    cur.execute("DROP TABLE foo;")
 
-    streams = await ksqldb.ksql("LIST STREAMS;")
-    print(streams)
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    main()

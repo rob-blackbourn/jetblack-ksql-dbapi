@@ -4,7 +4,6 @@ import jetblack_ksql_dbapi.aio as ksql
 
 
 async def main() -> None:
-    """Entrypoint"""
 
     conn = ksql.connect("http://localhost:8088")
 

@@ -1,8 +1,9 @@
 from importlib import resources as impresources
 
-from lark import Lark
+from lark import Lark, LarkError
 
 from . import _grammars
+from ._exceptions import ProgrammingError
 from ._statement_transformer import (
     KsqlStatementTransformer,
     StatementStyle,
@@ -21,12 +22,15 @@ class KsqlInspector:
         self._transformer = KsqlStatementTransformer()
 
     def find_statement_type(self, query: str) -> tuple[StatementStyle, StatementType]:
-        tree = self._parser.parse(query)
-        statement_types = self._transformer.transform(tree)
-        if len(statement_types) != 1:
-            raise ValueError("Expected a single statement")
-        value = statement_types[0]
-        if not is_statement_tuple(value):
-            raise ValueError(
-                "Expected a tuple of (StatementStyle, StatementType)")
-        return value
+        try:
+            tree = self._parser.parse(query)
+            statement_types = self._transformer.transform(tree)
+            if len(statement_types) != 1:
+                raise ValueError("Expected a single statement")
+            value = statement_types[0]
+            if not is_statement_tuple(value):
+                raise ValueError(
+                    "Expected a tuple of (StatementStyle, StatementType)")
+            return value
+        except LarkError as error:
+            raise ProgrammingError("Invalid statement") from error
