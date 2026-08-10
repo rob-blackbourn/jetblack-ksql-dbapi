@@ -192,7 +192,9 @@ def handle_response(
             return _handle_table_response(cast(KsqlTablesResponse, response))
 
         case 'sourceDescription':
-            return _handle_source_description(cast(SourceDescription, response))
+            return _handle_source_description(
+                cast(SourceDescription, response['sourceDescription'])
+            )
 
         case _:
             return None
