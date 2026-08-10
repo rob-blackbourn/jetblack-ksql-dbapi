@@ -1,9 +1,103 @@
 import json
 from inspect import get_annotations
-from typing import Any, Collection, Mapping, Sequence, TypedDict, cast, get_args
+from typing import (
+    Any,
+    Collection,
+    Literal,
+    Mapping,
+    Sequence,
+    TypedDict,
+    cast,
+    get_args
+)
 
 from jetblack_ksql_dbapi._ksql_types import QueryMetaData
 from jetblack_ksql_dbapi._types import PY_TYPE_MAP
+
+type WindowType = Literal['SESSION', 'HOPPING', 'TUMBLING']
+type KsqlQueryType = Literal['PERSISTENT', 'PUSH', 'PULL']
+type PersistentQueryType = Literal['CREATE_SOURCE', 'CREATE_AS', 'INSERT']
+type KsqlQueryStatus = Literal['RUNNING', 'ERROR', 'UNRESPONSIVE', 'PAUSED']
+type QueryStatusCount = Mapping[KsqlQueryStatus, int]
+type SqlBaseType = Literal[
+    'BOOLEAN', 'INTEGER', 'BIGINT', 'DECIMAL', 'DOUBLE', 'STRING', 'ARRAY', 'MAP',
+    'STRUCT', 'TIME', 'DATE', 'TIMESTAMP', 'BYTES']
+type FieldType = Literal['SYSTEM', 'KEY', 'HEADER']
+
+
+class RunningQuery(TypedDict):
+    queryString: str
+    sinks: set[str]
+    sinkKafkaTopics: set[str]
+    id: str
+    statusCount: QueryStatusCount
+    queryType: KsqlQueryType
+
+
+class SchemaInfo[FieldInfoType: 'FieldInfo'](TypedDict):
+    type: SqlBaseType
+    fields: list[FieldInfoType]
+    memberSchema: 'SchemaInfo'
+    parameters: Mapping[str, Any]
+
+
+class FieldInfo(TypedDict):
+    name: str
+    schema: SchemaInfo
+    fieldType: FieldType | None
+    headerKey: str | None
+
+
+class ConsumerPartitionOffsets(TypedDict):
+    partition: int
+    logStartOffset: int
+    logEndOffset: int
+    consumerOffset: int
+
+
+class QueryTopicOffsetSummary(TypedDict):
+    kafkaTopic: str
+    offsets: list[ConsumerPartitionOffsets]
+
+
+class QueryOffsetSummary(TypedDict):
+    groupId: str
+    topicSummaries: list[QueryTopicOffsetSummary]
+
+
+class KsqlHostInfoEntity(TypedDict):
+    host: str
+    port: int
+
+
+class QueryHostStat(TypedDict):
+    host: KsqlHostInfoEntity
+    name: str
+    value: float
+    timestamp: int
+
+
+class SourceDescription(TypedDict):
+    name: str
+    windowType: WindowType
+    readQueries: list[RunningQuery]
+    writeQueries: list[RunningQuery]
+    fields: list[FieldInfo]
+    type: str
+    timestamp: str
+    statistics: str
+    errorStats: str
+    extended: bool
+    keyFormat: str
+    valueFormat: str
+    topic: str
+    partitions: int
+    replication: int
+    statement: str
+    queryOffsetSummaries: list[QueryOffsetSummary]
+    sourceConstraints: list[str]
+    clusterStatistics: list[QueryHostStat]
+    clusterErrorStats: list[QueryHostStat]
 
 
 class KsqlTable(TypedDict):
@@ -50,9 +144,11 @@ def _to_ndjson(items: Sequence[Any]) -> str:
 
 
 def _to_query_response(
-        query_id: str,
-        rows: Sequence[Mapping[str, Any]],
-        meta_data: Mapping[str, type]
+    query_id: str,
+    rows: Sequence[Mapping[str, Any]],
+    meta_data: Mapping[str, type]
+
+
 ) -> tuple[QueryMetaData, Sequence[Sequence[Any]]]:
     query_meta_data = _to_query_meta_data(query_id, meta_data)
     query_rows = _to_query_rows(rows, meta_data.keys())
@@ -60,7 +156,7 @@ def _to_query_response(
 
 
 def _handle_table_response(
-        response: KsqlTablesResponse
+    response: KsqlTablesResponse
 ) -> tuple[QueryMetaData, Sequence[Sequence[Any]]]:
     annot = get_annotations(KsqlTablesResponse)
     tables_annotation, *_ = get_args(annot['tables'])
@@ -68,19 +164,42 @@ def _handle_table_response(
     return _to_query_response('#tables', response['tables'], table_metadata)
 
 
+def _handle_source_description(
+        source_description: SourceDescription
+) -> tuple[QueryMetaData, Sequence[Sequence[Any]]]:
+    query_meta_data: QueryMetaData = {
+        'queryId': '#sourceDescription',
+        'columnNames': ['name', 'type', 'precision', 'scale'],
+        'columnTypes': ['STRING', 'STRING', 'INTEGER', 'INTEGER']
+    }
+    query_rows = [
+        [
+            field['name'],
+            field['schema']['type'],
+            field['schema'].get('parameters', {}).get('precision'),
+            field['schema'].get('parameters', {}).get('scale'),
+        ]
+        for field in source_description['fields']
+    ]
+    return query_meta_data, query_rows
+
+
 def handle_response(
-        response: Mapping[str, Any]
+    response: Mapping[str, Any]
 ) -> tuple[QueryMetaData, Sequence[Sequence[Any]]] | None:
     match response['@type']:
         case 'tables':
             return _handle_table_response(cast(KsqlTablesResponse, response))
+
+        case 'sourceDescription':
+            return _handle_source_description(cast(SourceDescription, response))
 
         case _:
             return None
 
 
 def handle_responses(
-        responses: Sequence[Mapping[str, Any]]
+    responses: Sequence[Mapping[str, Any]]
 ) -> tuple[QueryMetaData, Sequence[Sequence[Any]]] | None:
     match len(responses):
         case 0:

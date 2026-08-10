@@ -12,7 +12,10 @@ def main() -> None:
 
     cur = conn.cursor()
 
-    cur.execute("SHOW TABLES;")
+    cur.execute("DESCRIBE user;")
+    assert cur.description is not None
+    for col in cur.description:
+        print(col)
     for row in cur:
         print(row)
 
@@ -23,7 +26,10 @@ async def main_async() -> None:
 
     cur = conn.cursor()
 
-    await cur.execute("SHOW TABLES;")
+    await cur.execute("DESCRIBE user;")
+    assert cur.description is not None
+    for col in cur.description:
+        print(col)
     async for row in cur:
         print(row)
 
