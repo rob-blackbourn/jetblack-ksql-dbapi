@@ -5,7 +5,8 @@ hidden.
 """
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, Iterator, Mapping, Sequence
+from types import TracebackType
+from typing import Any, Iterator, Mapping, Self, Sequence
 
 from ._description import Description
 
@@ -141,6 +142,18 @@ class Cursor(metaclass=ABCMeta):
     def __iter__(self) -> Iterator[Sequence[Any]]:
         ...
 
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+            self,
+            exc_type: type[BaseException] | None,
+            exc_value: BaseException | None,
+            traceback: TracebackType | None
+    ) -> bool | None:
+        self.close()
+        return None
+
 
 class Connection(metaclass=ABCMeta):
     """A PEP-294 compliant connection class.
@@ -171,3 +184,15 @@ class Connection(metaclass=ABCMeta):
         """This method is optional since not all databases provide transaction
         support. 
         """
+
+    def __enter__(self) -> Self:
+        return self
+
+    def __exit__(
+            self,
+            exc_type: type[BaseException] | None,
+            exc_value: BaseException | None,
+            traceback: TracebackType | None
+    ) -> bool | None:
+        self.close()
+        return None

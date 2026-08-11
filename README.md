@@ -96,4 +96,4 @@ if __name__ == "__main__":
 * Do something useful with the output of commands like `SHOW TABLES;`
 * Handle multiple commands.
 * Tidy up cursors with multiple executions.
-* rowcount can be supported if we detect pull/push quueries.
+* rowcount can be supported if we detect pull/push queries.

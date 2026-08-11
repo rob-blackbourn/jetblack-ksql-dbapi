@@ -1,7 +1,8 @@
 """Abstract implementations of the DBAPI objects"""
 
 from abc import ABCMeta, abstractmethod
-from typing import Any, AsyncIterator, Mapping, Sequence
+from types import TracebackType
+from typing import Any, AsyncIterator, Awaitable, Mapping, Self, Sequence
 
 from .._description import Description
 
@@ -140,6 +141,18 @@ class Cursor(metaclass=ABCMeta):
     def __aiter__(self) -> AsyncIterator[Sequence[Any]]:
         ...
 
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(
+            self,
+            exc_type: type[BaseException] | None,
+            exc_value: BaseException | None,
+            traceback: TracebackType | None
+    ) -> bool | None:
+        await self.close()
+        return None
+
 
 class Connection(metaclass=ABCMeta):
     """A PEP-294 style connection class.
@@ -170,3 +183,15 @@ class Connection(metaclass=ABCMeta):
         """This method is optional since not all databases provide transaction
         support. 
         """
+
+    async def __aenter__(self) -> Self:
+        return self
+
+    async def __aexit__(
+            self,
+            exc_type: type[BaseException] | None,
+            exc_value: BaseException | None,
+            traceback: TracebackType | None
+    ) -> bool | None:
+        await self.close()
+        return None

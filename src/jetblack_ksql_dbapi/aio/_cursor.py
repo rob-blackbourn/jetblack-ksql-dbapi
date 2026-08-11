@@ -83,7 +83,7 @@ class KsqlAsyncCursor(Cursor):
         raise NotSupportedError("ksql does not support stored procedures")
 
     async def close(self) -> None:
-        if self._query_id is None:
+        if self._query_id is None or self._query_id.startswith('#'):
             return
 
         headers = {

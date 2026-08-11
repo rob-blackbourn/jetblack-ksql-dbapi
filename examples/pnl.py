@@ -4,7 +4,7 @@ from decimal import Decimal
 import json
 from typing import Any, TypedDict, cast
 
-from jetblack_ksql_dbapi import AsyncKsqlDbClient
+from jetblack_ksql_dbapi.aio import connect, Connection
 
 
 class CurrencyDict(TypedDict):
@@ -149,11 +149,11 @@ DDL = {
 }
 
 
-async def setup(ksqldb: AsyncKsqlDbClient) -> None:
-    for name, sql in DDL.items():
-        print(f"{name}: {sql}")
-        response = await ksqldb.ksql(sql)
-        print(response)
+async def setup(conn: Connection) -> None:
+    async with conn.cursor() as cur:
+        for name, sql in DDL.items():
+            print(f"{name}: {sql}")
+            await cur.execute(sql)
 
     print("Done")
 
@@ -180,11 +180,11 @@ def to_sql(value: Any) -> str:
             raise ValueError(f"Unhandled type: {value}")
 
 
-async def populate(ksqldb: AsyncKsqlDbClient) -> None:
+async def populate(conn: Connection) -> None:
     with open("examples/pnl_data/currencies.json", "r") as f:
         currencies = cast(list[CurrencyDict], json.load(f))
 
-    for currency in currencies:
+    async with conn.cursor() as cur:
         query = f"""\
 INSERT INTO currency_table(
     ccy,
@@ -197,35 +197,49 @@ INSERT INTO currency_table(
     is_commodity,
     is_per_usd
 ) VALUES (
-    {to_sql(currency['ccy'])},
-    {to_sql(currency['name'])},
-    {to_sql(currency['minor_unit'])},
-    {to_sql(currency['numeric_code'])},
-    {to_sql(currency['is_legacy'])},
-    {to_sql(currency['is_major'])},
-    {to_sql(currency['is_ndf'])},
-    {to_sql(currency['is_commodity'])},
-    {to_sql(currency['is_per_usd'])}
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?,
+    ?
 );
 """
-        response = await ksqldb.ksql(query)
-        print(response)
+        seq_params = [
+            [
+                currency['ccy'],
+                currency['name'],
+                currency['minor_unit'],
+                currency['numeric_code'],
+                currency['is_legacy'],
+                currency['is_major'],
+                currency['is_ndf'],
+                currency['is_commodity'],
+                currency['is_per_usd']
+            ]
+            for currency in currencies
+        ]
+        await cur.executemany(query, seq_params)
 
 
-async def query(ksqldb: AsyncKsqlDbClient) -> None:
-    currency_query = "SELECT * FROM currency;"
-    async for currency in ksqldb.query(currency_query):
-        print(currency)
+async def query(conn: Connection) -> None:
+    async with conn.cursor() as cur:
+        currency_query = "SELECT * FROM currency;"
+        await cur.execute(currency_query)
+        async for currency in cur:
+            print(currency)
 
 
 async def main() -> None:
     """Entrypoint"""
 
-    ksqldb = AsyncKsqlDbClient()
-
-    # await setup(ksqldb)
-    # await populate(ksqldb)
-    await query(ksqldb)
+    async with connect("http://localhost:8088") as conn:
+        await setup(conn)
+        await populate(conn)
+        await query(conn)
 
 
 if __name__ == "__main__":
