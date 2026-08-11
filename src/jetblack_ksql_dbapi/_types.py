@@ -85,8 +85,13 @@ class DBAPITypeObject[T]:
     ) -> None:
         self.name = name
         self.types = set(types)
-        self.from_sql = from_sql
+        self._from_sql = from_sql
         self.to_sql = to_sql
+
+    def from_sql(self, s: str | T | None, config: FormatConfig) -> T | None:
+        if isinstance(s, str):
+            return self._from_sql(s, config)
+        return s
 
     def __hash__(self) -> int:
         return hash(self.name)
@@ -304,21 +309,31 @@ def _raise_if_not_type(value: Any, type_: type | tuple[type]) -> bool:
 
 def to_sql(parameter: Any, config: FormatConfig) -> str:
 
-    if isinstance(parameter, (list, tuple)):
+    if parameter is None:
+
+        return "NULL"
+
+    elif isinstance(parameter, (list, tuple)):
+
         args = ", ".join(
             to_sql(v, config)
             for v in parameter
         )
         return f"ARRAY[{args}]"
+
     elif isinstance(parameter, Mapping):
+
         args = ", ".join(
             f"{k} := {to_sql(v, config)}"
             for k, v in parameter.items()
             if _raise_if_not_type(k, str)
         )
         return f"STRUCT({args})"
+
     else:
+
         py_type = type(parameter)
+
         if py_type in PY_TYPE_MAP:
             return PY_TYPE_MAP[py_type].to_sql(parameter, config)
         else:

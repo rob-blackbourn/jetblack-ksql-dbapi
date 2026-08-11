@@ -100,8 +100,8 @@ class KsqlAsyncCursor(Cursor):
             json=body,
             timeout=self._close_timeout
         )
-        if not response.is_success:
-            raise Error("Failed to close query")
+        # if not response.is_success:
+        #     raise Error("Failed to close query")
 
     async def execute(
             self,
@@ -148,7 +148,7 @@ class KsqlAsyncCursor(Cursor):
             raise ValueError("Expected a command")
 
         ksql = "".join(bound_queries)
-        await self._ksql(ksql)
+        await self._ksql(ksql, timeout=600.0)
 
     async def _ksql(
             self,

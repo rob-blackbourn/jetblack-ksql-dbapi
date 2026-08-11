@@ -26,7 +26,7 @@ CREATE OR REPLACE TABLE currency_test
     is_per_usd      BOOLEAN
 )
 WITH (
-    kafka_topic='currency',
+    kafka_topic='currency_test',
     value_format='json',
     key_format='json',
     partitions=1
@@ -61,7 +61,7 @@ CREATE OR REPLACE TABLE currency_test
     is_per_usd      BOOLEAN
 )
 WITH (
-    kafka_topic='currency',
+    kafka_topic='currency_test',
     value_format='json',
     key_format='json',
     partitions=1

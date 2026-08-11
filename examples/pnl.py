@@ -19,6 +19,26 @@ class CurrencyDict(TypedDict):
     is_per_usd: bool
 
 
+SECURITY_TABLE_DROP = "DROP TABLE IF EXISTS security_table DELETE TOPIC;"
+STRATEGY_TABLE_DROP = "DROP TABLE IF EXISTS strategy_table DELETE TOPIC;"
+TRADE_STREAM_DROP = "DROP STREAM IF EXISTS trade DELETE TOPIC;"
+POSITION_TABLE_DROP = "DROP TABLE IF EXISTS position_table DELETE TOPIC;"
+PRICE_STREAM_DROP = "DROP STREAM IF EXISTS price DELETE TOPIC;"
+CURRENCY_TABLE_DROP = "DROP TABLE IF EXISTS currency_table DELETE TOPIC;"
+CURRENCY_QUERYABLE_DROP = "DROP TABLE IF EXISTS currency;"
+FX_RATE_STREAM_DROP = "DROP STREAM IF EXISTS fx_rate DELETE TOPIC;"
+
+DROP = {
+    'fx_rate': FX_RATE_STREAM_DROP,
+    'currency_queryable': CURRENCY_QUERYABLE_DROP,
+    'currency_table': CURRENCY_TABLE_DROP,
+    'price': PRICE_STREAM_DROP,
+    'position_table': POSITION_TABLE_DROP,
+    'trade': TRADE_STREAM_DROP,
+    'strategy_table': STRATEGY_TABLE_DROP,
+    'security_table': SECURITY_TABLE_DROP,
+}
+
 SECURITY_TABLE_DDL = """\
 CREATE OR REPLACE TABLE security_table
 (
@@ -149,7 +169,16 @@ DDL = {
 }
 
 
-async def setup(conn: Connection) -> None:
+async def drop(conn: Connection) -> None:
+    async with conn.cursor() as cur:
+        for name, sql in DROP.items():
+            print(f"{name}: {sql}")
+            await cur.execute(sql)
+
+    print("Done")
+
+
+async def create(conn: Connection) -> None:
     async with conn.cursor() as cur:
         for name, sql in DDL.items():
             print(f"{name}: {sql}")
@@ -237,8 +266,9 @@ async def main() -> None:
     """Entrypoint"""
 
     async with connect("http://localhost:8088") as conn:
-        await setup(conn)
-        await populate(conn)
+        # await drop(conn)
+        # await create(conn)
+        # await populate(conn)
         await query(conn)
 
 
