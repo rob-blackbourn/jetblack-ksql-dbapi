@@ -19,7 +19,16 @@ class CurrencyDict(TypedDict):
     is_per_usd: bool
 
 
+class SecurityDict(TypedDict):
+    security_id: int
+    ticker: str
+    description: str
+    contract_size: int
+    ccy: str
+
+
 SECURITY_TABLE_DROP = "DROP TABLE IF EXISTS security_table DELETE TOPIC;"
+SECURITY_QUERYABLE_DROP = "DROP TABLE IF EXISTS security;"
 STRATEGY_TABLE_DROP = "DROP TABLE IF EXISTS strategy_table DELETE TOPIC;"
 TRADE_STREAM_DROP = "DROP STREAM IF EXISTS trade DELETE TOPIC;"
 POSITION_TABLE_DROP = "DROP TABLE IF EXISTS position_table DELETE TOPIC;"
@@ -36,6 +45,7 @@ DROP = {
     'position_table': POSITION_TABLE_DROP,
     'trade': TRADE_STREAM_DROP,
     'strategy_table': STRATEGY_TABLE_DROP,
+    'security_queryable': SECURITY_QUERYABLE_DROP,
     'security_table': SECURITY_TABLE_DROP,
 }
 
@@ -53,6 +63,10 @@ CREATE OR REPLACE TABLE security_table
     key_format='json',
     partitions=1
 );"""
+
+SECURITY_QUERYABLE_DDL = """\
+CREATE TABLE security AS
+SELECT * FROM security_table;"""
 
 STRATEGY_TABLE_DDL = """\
 CREATE OR REPLACE TABLE strategy_table
@@ -159,6 +173,7 @@ WITH (
 
 DDL = {
     'security_table': SECURITY_TABLE_DDL,
+    'security_queryable': SECURITY_QUERYABLE_DDL,
     'strategy_table': STRATEGY_TABLE_DDL,
     'trade': TRADE_STREAM_DDL,
     'position_table': POSITION_TABLE_DDL,
@@ -209,7 +224,7 @@ def to_sql(value: Any) -> str:
             raise ValueError(f"Unhandled type: {value}")
 
 
-async def populate(conn: Connection) -> None:
+async def populate_currencies(conn: Connection) -> None:
     with open("examples/pnl_data/currencies.json", "r") as f:
         currencies = cast(list[CurrencyDict], json.load(f))
 
@@ -254,21 +269,67 @@ INSERT INTO currency_table(
         await cur.executemany(query, seq_params)
 
 
-async def query(conn: Connection) -> None:
+async def populate_securities(conn: Connection) -> None:
+    with open("examples/pnl_data/securities.json", "r") as f:
+        securities = cast(list[SecurityDict], json.load(f))
+
     async with conn.cursor() as cur:
+        query = f"""\
+INSERT INTO security_table(
+    security_id,
+    ticker,
+    description,
+    contract_size,
+    ccy
+) VALUES (
+    ?,
+    ?,
+    ?,
+    ?,
+    ?
+);
+"""
+        seq_params = [
+            [
+                security['security_id'],
+                security['ticker'],
+                security['description'],
+                security['contract_size'],
+                security['ccy'],
+            ]
+            for security in securities
+        ]
+        await cur.executemany(query, seq_params)
+
+
+async def populate(conn: Connection) -> None:
+
+    await populate_currencies(conn)
+    await populate_securities(conn)
+
+
+async def query(conn: Connection) -> None:
+
+    async with conn.cursor() as cur:
+
         currency_query = "SELECT * FROM currency;"
         await cur.execute(currency_query)
         async for currency in cur:
             print(currency)
+
+        security_query = "SELECT * FROM security;"
+        await cur.execute(security_query)
+        async for security in cur:
+            print(security)
 
 
 async def main() -> None:
     """Entrypoint"""
 
     async with connect("http://localhost:8088") as conn:
-        # await drop(conn)
-        # await create(conn)
-        # await populate(conn)
+        await drop(conn)
+        await create(conn)
+        await populate(conn)
         await query(conn)
 
 

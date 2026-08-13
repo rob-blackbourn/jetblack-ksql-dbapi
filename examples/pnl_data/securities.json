@@ -1,0 +1,37 @@
+[
+    {
+        "security_id": 1,
+        "ticker": "AAPL",
+        "description": "Apple Inc",
+        "contract_size": 1,
+        "ccy": "USD"
+    },
+    {
+        "security_id": 2,
+        "ticker": "AMZN",
+        "description": "Amazon.com Inc",
+        "contract_size": 1,
+        "ccy": "USD"
+    },
+    {
+        "security_id": 3,
+        "ticker": "GOOG",
+        "description": "Alphabet Inc Class C",
+        "contract_size": 1,
+        "ccy": "USD"
+    },
+    {
+        "security_id": 4,
+        "ticker": "META",
+        "description": "Meta Platforms Inc",
+        "contract_size": 1,
+        "ccy": "USD"
+    },
+    {
+        "security_id": 5,
+        "ticker": "NVDA",
+        "description": "NVIDEA Corp",
+        "contract_size": 1,
+        "ccy": "USD"
+    }
+]
