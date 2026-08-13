@@ -1,6 +1,6 @@
 [project]
 name = "jetblack-ksql-dbapi"
-version = "0.2.0"
+version = "0.2.1"
 description = "A vanilla and asyncio DBAPI interface for ksql"
 authors = [{name = "Rob Blackbourn", email = "rob.blackbourn@gmail.com"}]
 readme = "README.md"
